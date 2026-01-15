@@ -58,38 +58,42 @@ function RegistroRetiros() {
     switch (status?.toLowerCase()) {
       case 'exitoso':
       case 'completed':
-        return { bg: 'bg-green-50', badge: 'bg-green-100 text-green-700' };
+        return 'bg-green-100 text-green-800';
       case 'pendiente':
       case 'pending':
-        return { bg: 'bg-amber-50', badge: 'bg-amber-100 text-amber-700' };
+        return 'bg-yellow-100 text-yellow-800';
       default:
-        return { bg: 'bg-gray-50', badge: 'bg-gray-100 text-gray-700' };
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getStatusLabel = (status: string) => {
-    return status?.toLowerCase() === 'pending' ? 'Pendiente' : 'Exitoso';
+    switch (status?.toLowerCase()) {
+      case 'completed':
+        return 'Exitoso';
+      case 'pending':
+        return 'Pendiente';
+      default:
+        return status;
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 to-purple-950 pb-24">
-      <div className="bg-purple-800 px-6 py-6 shadow-lg flex items-center gap-4 border-b border-purple-700">
+      <div className="bg-purple-800 px-6 py-6 shadow-sm flex items-center gap-4 border-b border-purple-700">
         <button
           onClick={() => navigate(-1)}
-          className="text-yellow-400 hover:text-yellow-300 transition-colors"
+          className="text-yellow-400 hover:text-yellow-300"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-2xl font-bold text-white flex-1 text-center">
-          Registros de retiro
-        </h1>
-        <div className="w-6" />
+        <h1 className="text-2xl font-bold text-yellow-400">Registros de Retiros</h1>
       </div>
 
-      <div className="p-6 space-y-4">
+      <div className="px-6 py-6">
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-300">Cargando registros...</p>
+            <p className="text-yellow-400">Cargando...</p>
           </div>
         ) : error ? (
           <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg">
@@ -97,47 +101,34 @@ function RegistroRetiros() {
           </div>
         ) : withdrawals.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-400">No tienes registros de retiro aún</p>
+            <p className="text-purple-200">No hay retiros registrados</p>
           </div>
         ) : (
-          withdrawals.map((withdrawal, index) => {
-            const colors = getStatusColor(withdrawal.status);
-            return (
-              <div
-                key={withdrawal.id}
-                className={`${colors.bg} rounded-lg p-4 border border-purple-200/30 shadow-sm hover:shadow-md transition-shadow`}
-              >
+          <div className="space-y-4">
+            {withdrawals.map((withdrawal, index) => (
+              <div key={withdrawal.id} className="bg-purple-800 rounded-xl p-4 shadow-md border border-purple-700">
                 <div className="flex items-center gap-4">
-                  <div className="bg-yellow-400 rounded-lg w-12 h-12 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <div className="w-12 h-12 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0">
                     <span className="text-purple-900 font-bold text-lg">R</span>
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-bold text-sm">
-                      {index + 1}
-                    </p>
-                    <p className="text-gray-300 text-xs">
-                      {formatDate(withdrawal.created_at)}
-                    </p>
+                    <p className="text-yellow-400 font-semibold">{index + 1}</p>
+                    <p className="text-purple-200 text-sm">{formatDate(withdrawal.created_at)}</p>
                   </div>
 
-                  <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                    <p className="text-white font-bold text-lg">
-                      {parseFloat(withdrawal.amount.toString()).toLocaleString('es-CO', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                      })}
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                    <p className="text-yellow-400 font-bold">
+                      ${Number(withdrawal.amount).toFixed(2)}
                     </p>
-                    <span
-                      className={`${colors.badge} text-xs font-medium px-2 py-1 rounded-full`}
-                    >
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(withdrawal.status)}`}>
                       {getStatusLabel(withdrawal.status)}
                     </span>
                   </div>
                 </div>
               </div>
-            );
-          })
+            ))}
+          </div>
         )}
       </div>
     </div>

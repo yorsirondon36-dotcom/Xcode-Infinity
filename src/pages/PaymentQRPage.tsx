@@ -77,60 +77,60 @@ function PaymentQRPage() {
   const isSubmitDisabled = !referenceCode.trim() || isLoading;
 
   return (
-    <div className="min-h-screen bg-[#E1F5FE] pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-purple-900 to-purple-950 pb-24">
       {/* Header */}
-      <div className="bg-white px-6 py-4 shadow-sm flex items-center gap-4">
+      <div className="bg-purple-800 px-6 py-4 shadow-sm flex items-center gap-4 border-b border-purple-700">
         <button
           onClick={() => navigate('/recargas')}
-          className="text-gray-700 hover:text-gray-900"
+          className="text-yellow-400 hover:text-yellow-300"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-2xl font-bold text-gray-800">Instrucción para recarga</h1>
+        <h1 className="text-2xl font-bold text-yellow-400">Instrucción para recarga</h1>
       </div>
 
       {/* Content */}
       <div className="p-6 space-y-6 max-w-md mx-auto">
         {/* Instructions */}
         <div className="space-y-4">
-          <h2 className="text-center text-lg font-semibold text-gray-800">
+          <h2 className="text-center text-lg font-semibold text-yellow-400">
             Pasos para tu recarga
           </h2>
-          <ol className="space-y-3 text-gray-700">
+          <ol className="space-y-3 text-purple-100">
             <li className="flex gap-3">
-              <span className="font-bold flex-shrink-0">1.</span>
+              <span className="font-bold flex-shrink-0 text-yellow-400">1.</span>
               <span>Abre tu aplicación Nequi en tu celular</span>
             </li>
             <li className="flex gap-3">
-              <span className="font-bold flex-shrink-0">2.</span>
+              <span className="font-bold flex-shrink-0 text-yellow-400">2.</span>
               <span>Escanea el código QR a continuación e introduce el importe indicado</span>
             </li>
             <li className="flex gap-3">
-              <span className="font-bold flex-shrink-0">3.</span>
+              <span className="font-bold flex-shrink-0 text-yellow-400">3.</span>
               <span>Una vez completada la transferencia, ingresa la referencia exacta del voucher abajo</span>
             </li>
           </ol>
         </div>
 
         {/* Note */}
-        <div className="flex gap-2 p-4 bg-red-50 rounded-lg border border-red-200">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-red-600 font-semibold">
+        <div className="flex gap-2 p-4 bg-red-500/20 rounded-lg border border-red-500">
+          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-red-300 font-semibold">
             Nota: Asegúrese de rellenar correctamente la 'referencia' del voucher, de lo contrario el dinero no llegará a tiempo.
           </p>
         </div>
 
-        {/* White Card */}
-        <div className="bg-white rounded-2xl p-6 shadow-md space-y-6">
+        {/* Purple Card */}
+        <div className="bg-purple-800 rounded-2xl p-6 shadow-md space-y-6 border border-purple-700">
           {/* Order Number */}
           <div>
-            <label className="text-sm text-gray-600">Número de orden:</label>
-            <p className="text-lg font-bold text-gray-800 mt-1">{orderNumber}</p>
+            <label className="text-sm text-purple-300">Número de orden:</label>
+            <p className="text-lg font-bold text-yellow-400 mt-1">{orderNumber}</p>
           </div>
 
           {/* Amount */}
-          <div className="border-t border-gray-200 pt-4">
-            <p className="text-3xl font-bold text-gray-800">
+          <div className="border-t border-purple-700 pt-4">
+            <p className="text-3xl font-bold text-yellow-400">
               COP {amount.toLocaleString('es-CO')}
             </p>
           </div>
@@ -147,8 +147,8 @@ function PaymentQRPage() {
           {/* Reference Input */}
           <div>
             <label className="block text-sm font-semibold mb-2">
-              <span className="text-red-600">*</span>
-              <span className="text-gray-800 ml-1">Referencia:</span>
+              <span className="text-red-400">*</span>
+              <span className="text-purple-100 ml-1">Referencia:</span>
             </label>
             <input
               type="text"
@@ -158,14 +158,14 @@ function PaymentQRPage() {
                 setReferenceCode(e.target.value);
                 setError('');
               }}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-lime-500 placeholder-gray-400"
+              className="w-full px-4 py-3 border-2 border-purple-600 rounded-lg bg-purple-900 text-white focus:outline-none focus:border-yellow-400 placeholder-purple-400"
             />
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="p-3 bg-red-500/20 border border-red-500 rounded-lg">
+              <p className="text-sm text-red-300">{error}</p>
             </div>
           )}
 
@@ -175,8 +175,8 @@ function PaymentQRPage() {
             disabled={isSubmitDisabled}
             className={`w-full py-4 rounded-lg font-bold text-lg transition-all duration-200 ${
               isSubmitDisabled
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-lime-400 text-gray-900 hover:bg-lime-500 shadow-lg'
+                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                : 'bg-yellow-400 text-purple-900 hover:bg-yellow-500 shadow-lg'
             }`}
           >
             {isLoading ? 'Procesando...' : 'Entregar'}

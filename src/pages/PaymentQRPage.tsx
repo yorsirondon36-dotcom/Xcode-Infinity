@@ -1,78 +1,187 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, QrCode } from 'lucide-react';
+import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 interface LocationState {
   amount: number;
-  paymentMethod: string;
+  paymentMethod?: string;
 }
 
 function PaymentQRPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const state = location.state as LocationState;
 
-  const amount = state?.amount || 0;
-  const paymentMethod = state?.paymentMethod || 'Nequi';
+  const [orderNumber, setOrderNumber] = useState('');
+  const [referenceCode, setReferenceCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const amount = state?.amount || 60000;
 
-  const getPaymentMethodLabel = (method: string): string => {
-    const labels: Record<string, string> = {
-      nequi: 'Nequi',
-      bancolombia: 'Bancolombia'
+  useEffect(() => {
+    const generateOrderNumber = () => {
+      const timestamp = Date.now();
+      const random = Math.floor(Math.random() * 10000);
+      const order = `ORD${timestamp}${random}`;
+      setOrderNumber(order);
     };
-    return labels[method] || method;
+    generateOrderNumber();
+  }, []);
+
+  const handleSubmit = async () => {
+    if (!referenceCode.trim()) {
+      setError('Por favor ingrese una referencia');
+      return;
+    }
+
+    if (!user) {
+      setError('Usuario no autenticado');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const { error: insertError } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: user.id,
+          order_number: orderNumber,
+          amount: amount,
+          reference_code: referenceCode,
+          payment_method: 'nequi',
+          status: 'pending'
+        });
+
+      if (insertError) throw insertError;
+
+      navigate('/confirmacion', {
+        state: {
+          orderNumber,
+          amount,
+          referenceCode
+        }
+      });
+    } catch (err) {
+      console.error('Error:', err);
+      setError('Error al procesar la recarga. Intenta nuevamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  const isSubmitDisabled = !referenceCode.trim() || isLoading;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-900 to-purple-950 pb-24">
+    <div className="min-h-screen bg-[#E1F5FE] pb-24">
       {/* Header */}
-      <div className="bg-purple-800 px-6 py-6 shadow-sm flex items-center gap-4">
-        <button onClick={() => navigate('/recargas')} className="text-yellow-400 hover:text-yellow-500">
+      <div className="bg-white px-6 py-4 shadow-sm flex items-center gap-4">
+        <button
+          onClick={() => navigate('/recargas')}
+          className="text-gray-700 hover:text-gray-900"
+        >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-2xl font-bold text-white">Pago QR</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Instrucción para recarga</h1>
       </div>
 
       {/* Content */}
-      <div className="p-6 space-y-8 flex flex-col items-center">
-        {/* Title */}
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-white">Página de Pagos en Construcción</h2>
-        </div>
-
-        {/* QR Code Area */}
-        <div className="bg-purple-800 rounded-2xl p-8 shadow-lg max-w-sm w-full">
-          <div className="flex items-center justify-center h-64 bg-purple-900 rounded-lg">
-            <QrCode className="w-32 h-32 text-yellow-400" />
-          </div>
-        </div>
-
-        {/* Payment Details */}
-        <div className="bg-purple-800 rounded-xl p-6 shadow-sm max-w-sm w-full space-y-4">
-          <div>
-            <label className="text-xs font-bold text-gray-300 mb-1 block">MÉTODO DE PAGO</label>
-            <p className="text-lg font-bold text-white">{getPaymentMethodLabel(paymentMethod)}</p>
-          </div>
-
-          <div className="border-t border-purple-700 pt-4">
-            <label className="text-xs font-bold text-gray-300 mb-1 block">MONTO A RECARGAR</label>
-            <p className="text-3xl font-bold text-yellow-400">${amount.toLocaleString()} COP</p>
-          </div>
-        </div>
-
+      <div className="p-6 space-y-6 max-w-md mx-auto">
         {/* Instructions */}
-        <div className="bg-purple-800 border border-purple-700 rounded-xl p-4 max-w-sm w-full text-center">
-          <p className="text-sm text-gray-200">
-            Escanea este código con <span className="font-bold text-yellow-400">{getPaymentMethodLabel(paymentMethod)}</span> para recargar <span className="font-bold text-yellow-400">${amount.toLocaleString()} COP</span>.
+        <div className="space-y-4">
+          <h2 className="text-center text-lg font-semibold text-gray-800">
+            Pasos para tu recarga
+          </h2>
+          <ol className="space-y-3 text-gray-700">
+            <li className="flex gap-3">
+              <span className="font-bold flex-shrink-0">1.</span>
+              <span>Abre tu aplicación Nequi en tu celular</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="font-bold flex-shrink-0">2.</span>
+              <span>Escanea el código QR a continuación e introduce el importe indicado</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="font-bold flex-shrink-0">3.</span>
+              <span>Una vez completada la transferencia, ingresa la referencia exacta del voucher abajo</span>
+            </li>
+          </ol>
+        </div>
+
+        {/* Note */}
+        <div className="flex gap-2 p-4 bg-red-50 rounded-lg border border-red-200">
+          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-red-600 font-semibold">
+            Nota: Asegúrese de rellenar correctamente la 'referencia' del voucher, de lo contrario el dinero no llegará a tiempo.
           </p>
         </div>
-      </div>
 
-      {/* Confirm Button */}
-      <div className="fixed bottom-6 left-6 right-6">
-        <button className="w-full py-4 bg-yellow-400 text-purple-900 rounded-xl font-bold text-lg hover:bg-yellow-500 shadow-lg transition-all duration-200">
-          Confirmar Pago
-        </button>
+        {/* White Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-md space-y-6">
+          {/* Order Number */}
+          <div>
+            <label className="text-sm text-gray-600">Número de orden:</label>
+            <p className="text-lg font-bold text-gray-800 mt-1">{orderNumber}</p>
+          </div>
+
+          {/* Amount */}
+          <div className="border-t border-gray-200 pt-4">
+            <p className="text-3xl font-bold text-gray-800">
+              COP {amount.toLocaleString('es-CO')}
+            </p>
+          </div>
+
+          {/* QR Code */}
+          <div className="flex justify-center py-4">
+            <img
+              src="/whatsapp_image_2026-01-16_at_9.53.33_pm.jpeg"
+              alt="QR Code"
+              className="w-48 h-48 object-contain"
+            />
+          </div>
+
+          {/* Reference Input */}
+          <div>
+            <label className="block text-sm font-semibold mb-2">
+              <span className="text-red-600">*</span>
+              <span className="text-gray-800 ml-1">Referencia:</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Por favor ingrese una referencia"
+              value={referenceCode}
+              onChange={(e) => {
+                setReferenceCode(e.target.value);
+                setError('');
+              }}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-lime-500 placeholder-gray-400"
+            />
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitDisabled}
+            className={`w-full py-4 rounded-lg font-bold text-lg transition-all duration-200 ${
+              isSubmitDisabled
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-lime-400 text-gray-900 hover:bg-lime-500 shadow-lg'
+            }`}
+          >
+            {isLoading ? 'Procesando...' : 'Entregar'}
+          </button>
+        </div>
       </div>
     </div>
   );

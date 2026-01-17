@@ -10,6 +10,7 @@ import Tareas from './pages/Tareas';
 import Referidos from './pages/Referidos';
 import Recargas from './pages/Recargas';
 import PaymentQRPage from './pages/PaymentQRPage';
+import ConfirmationPage from './pages/ConfirmationPage';
 import Retiros from './pages/Retiros';
 import RegistroRecargas from './pages/RegistroRecargas';
 import RegistroRetiros from './pages/RegistroRetiros';
@@ -45,6 +46,7 @@ function App() {
           <Route path="/referidos" element={<ProtectedRoute element={<Referidos />} />} />
           <Route path="/recargas" element={<ProtectedRoute element={<Recargas />} />} />
           <Route path="/pago-qr" element={<ProtectedRoute element={<PaymentQRPage />} />} />
+          <Route path="/confirmacion" element={<ProtectedRoute element={<ConfirmationPage />} />} />
           <Route path="/retiros" element={<ProtectedRoute element={<Retiros />} />} />
           <Route path="/registro-recargas" element={<ProtectedRoute element={<RegistroRecargas />} />} />
           <Route path="/registro-retiros" element={<ProtectedRoute element={<RegistroRetiros />} />} />

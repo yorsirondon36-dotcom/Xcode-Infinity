@@ -19,7 +19,8 @@ function Recargas() {
         state: {
           amount: selectedAmount,
           paymentMethod: selectedPaymentMethod
-        }
+        },
+        replace: false
       });
     }
   };

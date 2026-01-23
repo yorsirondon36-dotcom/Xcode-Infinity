@@ -17,6 +17,7 @@ import RegistroRetiros from './pages/RegistroRetiros';
 import CuentaBancaria from './pages/CuentaBancaria';
 import MiEquipo from './pages/MiEquipo';
 import About from './pages/About';
+import ReferralRegistry from './components/ReferralRegistry';
 
 function ProtectedRoute({ element }: { element: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -53,6 +54,7 @@ function App() {
           <Route path="/cuenta-bancaria" element={<ProtectedRoute element={<CuentaBancaria />} />} />
           <Route path="/mi-equipo" element={<ProtectedRoute element={<MiEquipo />} />} />
           <Route path="/about" element={<ProtectedRoute element={<About />} />} />
+          <Route path="/registro-referidos" element={<ProtectedRoute element={<ReferralRegistry />} />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

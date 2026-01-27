@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import MyProfile from './pages/MyProfile';
 import Niveles from './pages/Niveles';
 import Tareas from './pages/Tareas';
+import Referidos from './pages/Referidos';
 import Recargas from './pages/Recargas';
 import PaymentQRPage from './pages/PaymentQRPage';
 import ConfirmationPage from './pages/ConfirmationPage';
@@ -43,7 +44,7 @@ function App() {
           <Route path="/mi-perfil" element={<ProtectedRoute element={<MyProfile />} />} />
           <Route path="/niveles" element={<ProtectedRoute element={<Niveles />} />} />
           <Route path="/tareas" element={<ProtectedRoute element={<Tareas />} />} />
-          <Route path="/referidos" element={<ProtectedRoute element={<ReferralRegistry />} />} />
+          <Route path="/referidos" element={<ProtectedRoute element={<Referidos />} />} />
           <Route path="/recargas" element={<ProtectedRoute element={<Recargas />} />} />
           <Route path="/pago-qr" element={<ProtectedRoute element={<PaymentQRPage />} />} />
           <Route path="/confirmacion" element={<ProtectedRoute element={<ConfirmationPage />} />} />

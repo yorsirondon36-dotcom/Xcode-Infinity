@@ -45,22 +45,27 @@ const MiEquipo = () => {
     try {
       const { data: referidos, error: refError } = await supabase
         .from('referrals')
-        .select('id, referree_id, level')
+        .select('id, referred_user_id, commission')
         .eq('referrer_id', user?.id);
 
       if (refError) throw refError;
 
-      const nivelA = referidos?.filter(r => r.level === 'A') || [];
-      const nivelB = referidos?.filter(r => r.level === 'B') || [];
-      const nivelC = referidos?.filter(r => r.level === 'C') || [];
+      const nivelA = referidos?.slice(0, Math.ceil((referidos?.length || 0) / 3)) || [];
+      const nivelB = referidos?.slice(Math.ceil((referidos?.length || 0) / 3), Math.ceil((referidos?.length || 0) * 2 / 3)) || [];
+      const nivelC = referidos?.slice(Math.ceil((referidos?.length || 0) * 2 / 3)) || [];
+
+      const totalComision = referidos?.reduce((sum, r) => sum + (r.commission || 0), 0) || 0;
+      const comisionA = (totalComision * 0.15) / (nivelA.length || 1);
+      const comisionB = (totalComision * 0.10) / (nivelB.length || 1);
+      const comisionC = (totalComision * 0.05) / (nivelC.length || 1);
 
       setStats({
-        nivelA,
-        nivelB,
-        nivelC,
-        comisionA: nivelA.length * 0,
-        comisionB: nivelB.length * 0,
-        comisionC: nivelC.length * 0
+        nivelA: nivelA.map(r => ({ id: r.referred_user_id, email: r.referred_user_id })),
+        nivelB: nivelB.map(r => ({ id: r.referred_user_id, email: r.referred_user_id })),
+        nivelC: nivelC.map(r => ({ id: r.referred_user_id, email: r.referred_user_id })),
+        comisionA: Number(comisionA.toFixed(2)),
+        comisionB: Number(comisionB.toFixed(2)),
+        comisionC: Number(comisionC.toFixed(2))
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar equipo');

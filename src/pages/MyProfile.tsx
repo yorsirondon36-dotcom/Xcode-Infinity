@@ -11,12 +11,9 @@ import {
   DollarSign,
   TrendingUp,
   BarChart3,
-  GitBranch,
   CreditCard,
-  HelpCircle,
   Info,
   ArrowUp,
-  Share2,
   Zap
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -174,17 +171,6 @@ function MyProfile() {
 
         <div className="space-y-3">
           <button
-            onClick={() => navigate('/referidos')}
-            className="w-full flex items-center justify-between p-4 bg-purple-800 rounded-lg hover:bg-purple-700 transition-colors shadow-sm border border-purple-700"
-          >
-            <div className="flex items-center gap-3">
-              <Share2 className="w-5 h-5 text-yellow-400" />
-              <span className="text-white font-medium">Registro de referidos</span>
-            </div>
-            <span className="text-yellow-400">›</span>
-          </button>
-
-          <button
             onClick={() => navigate('/registro-recargas')}
             className="w-full flex items-center justify-between p-4 bg-purple-800 rounded-lg hover:bg-purple-700 transition-colors shadow-sm border border-purple-700"
           >
@@ -224,17 +210,6 @@ function MyProfile() {
             <div className="flex items-center gap-3">
               <ArrowUp className="w-5 h-5 text-yellow-400" />
               <span className="text-white font-medium">Retirar</span>
-            </div>
-            <span className="text-yellow-400">›</span>
-          </button>
-
-          <button
-            onClick={() => navigate('/referidos')}
-            className="w-full flex items-center justify-between p-4 bg-purple-800 rounded-lg hover:bg-purple-700 transition-colors shadow-sm border border-purple-700"
-          >
-            <div className="flex items-center gap-3">
-              <Users className="w-5 h-5 text-yellow-400" />
-              <span className="text-white font-medium">Programa de Referidos</span>
             </div>
             <span className="text-yellow-400">›</span>
           </button>

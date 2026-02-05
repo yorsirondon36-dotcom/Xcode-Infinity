@@ -7,7 +7,7 @@ function Recargas() {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('nequi');
 
-  const amounts = [120000, 300000, 600000, 1000000, 1500000];
+  const amounts = [120000, 300000, 600000, 1000000, 1800000, 2700000, 3600000, 4800000, 7500000];
 
   const handleSelectAmount = (amount: number) => {
     setSelectedAmount(amount);
@@ -40,7 +40,7 @@ function Recargas() {
         {/* Amount Grid */}
         <div>
           <h2 className="text-sm font-bold text-yellow-400 mb-4">SELECCIONA UN MONTO</h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {amounts.map((amount) => (
               <button
                 key={amount}

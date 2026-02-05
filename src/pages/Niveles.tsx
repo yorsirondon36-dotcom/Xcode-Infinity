@@ -66,6 +66,36 @@ function Niveles() {
       dailyEarning: 34000,
       monthlyEarning: 1020000,
       disabled: true
+    },
+    {
+      id: 'vip5',
+      name: 'VIP 5',
+      price: 1800000,
+      videosPerDay: 25,
+      earningPerVideo: 2500,
+      dailyEarning: 62500,
+      monthlyEarning: 1875000,
+      disabled: true
+    },
+    {
+      id: 'vip6',
+      name: 'VIP 6',
+      price: 2700000,
+      videosPerDay: 30,
+      earningPerVideo: 3000,
+      dailyEarning: 90000,
+      monthlyEarning: 2700000,
+      disabled: true
+    },
+    {
+      id: 'vip7',
+      name: 'VIP 7',
+      price: 3600000,
+      videosPerDay: 35,
+      earningPerVideo: 3500,
+      dailyEarning: 122500,
+      monthlyEarning: 3675000,
+      disabled: true
     }
   ];
 

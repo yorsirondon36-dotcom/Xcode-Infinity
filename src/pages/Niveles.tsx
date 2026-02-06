@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -25,6 +25,8 @@ function Niveles() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [trialStatus, setTrialStatus] = useState<{ isActive: boolean; daysRemaining: number } | null>(null);
+  const [loadingTrial, setLoadingTrial] = useState(false);
 
   const vipLevels: VipLevel[] = [
     {
@@ -119,6 +121,63 @@ function Niveles() {
     }
   ];
 
+  useEffect(() => {
+    if (user?.id) {
+      checkTrialStatus();
+    }
+  }, [user?.id]);
+
+  const checkTrialStatus = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('trial_level_started_at')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (userData?.trial_level_started_at) {
+        const startDate = new Date(userData.trial_level_started_at);
+        const today = new Date();
+        const daysPassed = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (daysPassed < 3) {
+          setTrialStatus({ isActive: true, daysRemaining: 3 - daysPassed });
+        } else {
+          setTrialStatus({ isActive: false, daysRemaining: 0 });
+        }
+      }
+    } catch (error) {
+      console.error('Error checking trial status:', error);
+    }
+  };
+
+  const handleJoinTrial = async () => {
+    if (!user?.id) {
+      navigate('/login');
+      return;
+    }
+
+    setLoadingTrial(true);
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ trial_level_started_at: new Date().toISOString() })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setTrialStatus({ isActive: true, daysRemaining: 3 });
+      addToast('¡Bienvenido! Tienes 3 días para probar el sistema', 'success');
+    } catch (error) {
+      console.error('Error joining trial:', error);
+      addToast('Error al activar el nivel practicante', 'error');
+    } finally {
+      setLoadingTrial(false);
+    }
+  };
+
   const addToast = (message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') => {
     const id = Date.now().toString();
     const toast: Toast = { id, message, type };
@@ -173,6 +232,60 @@ function Niveles() {
 
       {/* VIP Cards Container */}
       <div className="px-6 py-8 space-y-6">
+        {/* Trial Level Card */}
+        <div className="bg-gradient-to-br from-purple-800 to-gray-900 rounded-2xl overflow-hidden shadow-2xl border border-purple-700 hover:border-purple-600 transition-all duration-300">
+          {/* VIP Logo Section */}
+          <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 py-8 flex items-center justify-center">
+            <div className="text-5xl font-bold text-gray-900">NIVEL PRACTICANTE</div>
+          </div>
+
+          {/* Details Section */}
+          <div className="p-6 space-y-4">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-purple-200 font-medium">Precio:</span>
+                <span className="text-white font-bold">$0</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-purple-200 font-medium">Videos por día:</span>
+                <span className="text-white font-bold">(3)</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-purple-200 font-medium">Ganancia por video:</span>
+                <span className="text-white font-bold">$1.000</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-purple-200 font-medium">Ganancia diaria:</span>
+                <span className="text-white font-bold">$3.000</span>
+              </div>
+              <div className="flex justify-between items-center border-t border-purple-700 pt-3">
+                <span className="text-yellow-400 font-bold">Duración:</span>
+                <span className="text-yellow-400 font-bold">3 días</span>
+              </div>
+              {trialStatus?.isActive && (
+                <div className="bg-green-600/20 border border-green-500 rounded-lg p-3">
+                  <span className="text-green-300 text-sm font-medium">
+                    Activo - {trialStatus.daysRemaining} días restantes
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Join Button */}
+            <button
+              onClick={handleJoinTrial}
+              disabled={trialStatus?.isActive || loadingTrial}
+              className={`w-full mt-6 py-3 rounded-lg font-bold text-lg transition-all duration-300 ${
+                trialStatus?.isActive
+                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 shadow-lg hover:shadow-pink-500/50'
+              }`}
+            >
+              {loadingTrial ? 'Procesando...' : trialStatus?.isActive ? 'Ya estás en prueba' : 'Participar'}
+            </button>
+          </div>
+        </div>
+
         {vipLevels.map((vip) => (
           <div
             key={vip.id}

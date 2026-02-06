@@ -7,7 +7,7 @@ function Recargas() {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('nequi');
 
-  const amounts = [120000, 300000, 600000, 1000000, 1800000, 2700000, 3600000, 4800000, 7500000];
+  const amounts = [150000, 480000, 1300000, 4700000, 12800000, 31000000, 67200000, 135000000, 325000000];
 
   const handleSelectAmount = (amount: number) => {
     setSelectedAmount(amount);

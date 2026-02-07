@@ -38,6 +38,14 @@ function FormasDeGanarPage() {
         />
       </div>
 
+      <div className="flex justify-center p-6">
+        <img
+          src="/whatsapp_image_2026-02-07_at_1.07.11_am.jpeg"
+          alt="Escala Salarial de Puesto"
+          className="w-11/12 h-auto rounded-xl shadow-lg"
+        />
+      </div>
+
       <div className="fixed bottom-6 left-6 right-6">
         <button
           onClick={() => navigate('/mi-perfil')}

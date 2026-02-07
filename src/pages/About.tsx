@@ -135,6 +135,88 @@ const About = () => {
               </li>
             </ul>
           </section>
+
+          <section className="bg-gradient-to-r from-orange-400/20 to-yellow-400/20 rounded-xl p-8 border-2 border-orange-400">
+            <h2 className="text-3xl font-bold text-orange-400 mb-4">Excode-Infinity & Disney × Pixar</h2>
+            <h3 className="text-xl font-semibold text-yellow-400 mb-6">Entrando al Mercado Colombiano</h3>
+            <p className="text-purple-200 leading-relaxed">
+              Excode-Infinity es una empresa especializada en sistemas de evaluación y calificación de contenido audiovisual, con experiencia probada en plataformas de streaming internacionales. Hoy, anunciamos nuestra llegada al mercado colombiano con un proyecto estratégico en alianza con The Walt Disney Company, enfocado en el análisis y calificación de trailers cinematográficos, con el objetivo claro de impulsar los ingresos del talento local y fortalecer la industria audiovisual nacional.
+            </p>
+          </section>
+
+          <section className="bg-purple-800/50 rounded-xl p-6 border border-purple-700">
+            <h2 className="text-2xl font-bold text-yellow-400 mb-4">Nuestro Sistema y Experiencia Previa</h2>
+            <p className="text-purple-200 leading-relaxed mb-5">
+              Nuestro sistema de calificación de trailers se basa en algoritmos avanzados combinados con evaluación humana especializada, diseñado para optimizar el impacto de contenido promocional en audiencias específicas. Durante los últimos 3 años, hemos implementado esta solución en plataformas de streaming de renombre en América del Norte y Europa, logrando:
+            </p>
+            <ul className="text-purple-200 space-y-3">
+              <li className="flex gap-3">
+                <span className="text-orange-400 font-bold">★</span>
+                <span>Mejoras de hasta un 28% en la tasa de conversión de visualizaciones de trailers a reproducciones de películas.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-orange-400 font-bold">★</span>
+                <span>Optimización de procesos que reduce tiempos de calificación en un 40%.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-orange-400 font-bold">★</span>
+                <span>Integración fluida con sistemas de gestión de contenido de empresas líderes del sector.</span>
+              </li>
+            </ul>
+          </section>
+
+          <section className="bg-purple-800/50 rounded-xl p-6 border border-purple-700">
+            <h2 className="text-2xl font-bold text-yellow-400 mb-4">Oportunidad para el Personal Colombiano</h2>
+            <p className="text-purple-200 leading-relaxed mb-5">
+              La entrada al mercado colombiano tiene como pilar central el desarrollo del talento local. Nuestro modelo propone:
+            </p>
+            <ul className="text-purple-200 space-y-3">
+              <li className="flex gap-3">
+                <span className="text-green-400 font-bold">✓</span>
+                <span><strong className="text-yellow-300">Ingresos competitivos:</strong> Remuneraciones por encima del promedio del sector audiovisual colombiano, con escalas salariales que reconocen la experiencia y el desempeño.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-green-400 font-bold">✓</span>
+                <span><strong className="text-yellow-300">Capacitación especializada:</strong> Programas de formación en metodologías de calificación Disney y herramientas tecnológicas propias de nuestra plataforma audiovisual, certificados internacionalmente.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-green-400 font-bold">✓</span>
+                <span><strong className="text-yellow-300">Oportunidades de crecimiento:</strong> Vías claras de promoción hacia roles de coordinación y liderazgo, con proyección a proyectos internacionales.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-green-400 font-bold">✓</span>
+                <span><strong className="text-yellow-300">Trabajo flexible:</strong> Adaptado a las necesidades del personal, con opciones de modalidad híbrida que combinan trabajo remoto y ayuda a tus ingresos mensuales como teletrabajo.</span>
+              </li>
+            </ul>
+          </section>
+
+          <section className="bg-purple-800/50 rounded-xl p-6 border border-purple-700">
+            <h2 className="text-2xl font-bold text-yellow-400 mb-4">Impacto en el Mercado Colombiano</h2>
+            <p className="text-purple-200 leading-relaxed mb-5">
+              Este proyecto no solo beneficiará directamente al personal contratado, sino que también contribuirá al fortalecimiento de la industria audiovisual nacional:
+            </p>
+            <ul className="text-purple-200 space-y-3">
+              <li className="flex gap-3">
+                <span className="text-orange-400 font-bold">▸</span>
+                <span>Transferencia de conocimientos y tecnologías de vanguardia.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-orange-400 font-bold">▸</span>
+                <span>Creación de sinergias con empresas locales de postproducción y marketing cinematográfico.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="text-orange-400 font-bold">▸</span>
+                <span>Impulso a la cultura del análisis de datos aplicado al contenido audiovisual en Colombia.</span>
+              </li>
+            </ul>
+          </section>
+
+          <section className="bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-xl p-6 border-2 border-yellow-400">
+            <h2 className="text-2xl font-bold text-yellow-400 mb-4">Próximos Pasos</h2>
+            <p className="text-purple-200 leading-relaxed">
+              En los próximos meses fortaleceremos el rendimiento económico. Durante el año 2026 nos consolidamos como tu mejor aliado económico. Juntos lograremos mejores oportunidades de ingresos diarios y un crecimiento sostenible para toda nuestra comunidad.
+            </p>
+          </section>
         </div>
       </div>
     </div>

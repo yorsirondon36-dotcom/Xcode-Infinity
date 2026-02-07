@@ -14,8 +14,12 @@ function FormasDeGanarPage() {
         <h1 className="text-2xl font-bold text-white">Formas de Ganar Dinero</h1>
       </div>
 
-      <div className="p-6 text-center text-purple-300">
-        <p>Página vacía</p>
+      <div className="p-6 flex justify-center">
+        <img
+          src="/whatsapp_image_2026-02-06_at_9.53.09_pm.jpeg"
+          alt="Reglas de Ingresos de Inversión"
+          className="w-full max-w-2xl rounded-xl shadow-lg"
+        />
       </div>
 
       <div className="fixed bottom-6 left-6 right-6">

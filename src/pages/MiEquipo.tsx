@@ -55,9 +55,9 @@ const MiEquipo = () => {
       const nivelC = referidos?.slice(Math.ceil((referidos?.length || 0) * 2 / 3)) || [];
 
       const totalComision = referidos?.reduce((sum, r) => sum + (r.commission || 0), 0) || 0;
-      const comisionA = (totalComision * 0.15) / (nivelA.length || 1);
-      const comisionB = (totalComision * 0.10) / (nivelB.length || 1);
-      const comisionC = (totalComision * 0.05) / (nivelC.length || 1);
+      const comisionA = (totalComision * 0.12) / (nivelA.length || 1);
+      const comisionB = (totalComision * 0.04) / (nivelB.length || 1);
+      const comisionC = (totalComision * 0.02) / (nivelC.length || 1);
 
       setStats({
         nivelA: nivelA.map(r => ({ id: r.referred_user_id, email: r.referred_user_id })),
@@ -104,7 +104,7 @@ const MiEquipo = () => {
           <div className="bg-purple-800 rounded-xl p-5 shadow-md border-t-4 border-orange-500">
             <div className="flex items-center justify-between mb-2">
               <p className="text-purple-300 text-sm font-semibold">GRUPO A</p>
-              <span className="bg-orange-500/20 text-orange-400 text-xs px-2 py-1 rounded-full font-bold">15%</span>
+              <span className="bg-orange-500/20 text-orange-400 text-xs px-2 py-1 rounded-full font-bold">12%</span>
             </div>
             <p className="text-3xl font-bold text-white mb-1">{stats.nivelA.length}</p>
             <p className="text-yellow-400 text-xs font-semibold">Referidos directos</p>
@@ -113,7 +113,7 @@ const MiEquipo = () => {
           <div className="bg-purple-800 rounded-xl p-5 shadow-md border-t-4 border-blue-500">
             <div className="flex items-center justify-between mb-2">
               <p className="text-purple-300 text-sm font-semibold">GRUPO B</p>
-              <span className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded-full font-bold">10%</span>
+              <span className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded-full font-bold">4%</span>
             </div>
             <p className="text-3xl font-bold text-white mb-1">{stats.nivelB.length}</p>
             <p className="text-yellow-400 text-xs font-semibold">Nivel indirecto</p>
@@ -122,7 +122,7 @@ const MiEquipo = () => {
           <div className="bg-purple-800 rounded-xl p-5 shadow-md border-t-4 border-emerald-500">
             <div className="flex items-center justify-between mb-2">
               <p className="text-purple-300 text-sm font-semibold">GRUPO C</p>
-              <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded-full font-bold">5%</span>
+              <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded-full font-bold">2%</span>
             </div>
             <p className="text-3xl font-bold text-white mb-1">{stats.nivelC.length}</p>
             <p className="text-yellow-400 text-xs font-semibold">Nivel lejano</p>
@@ -156,7 +156,7 @@ const MiEquipo = () => {
           <div className="bg-purple-800/50 rounded-xl p-5 border border-purple-700">
             <h3 className="text-orange-400 font-bold mb-3 flex items-center gap-2">
               <div className="w-3 h-3 bg-orange-500 rounded-full" />
-              Grupo A - 15% Comisión ({stats.nivelA.length} referidos)
+              Grupo A - 12% Comisión ({stats.nivelA.length} referidos)
             </h3>
             {stats.nivelA.length > 0 ? (
               <ul className="space-y-2">
@@ -174,7 +174,7 @@ const MiEquipo = () => {
           <div className="bg-purple-800/50 rounded-xl p-5 border border-purple-700">
             <h3 className="text-blue-400 font-bold mb-3 flex items-center gap-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full" />
-              Grupo B - 10% Comisión ({stats.nivelB.length} referidos)
+              Grupo B - 4% Comisión ({stats.nivelB.length} referidos)
             </h3>
             {stats.nivelB.length > 0 ? (
               <ul className="space-y-2">
@@ -192,7 +192,7 @@ const MiEquipo = () => {
           <div className="bg-purple-800/50 rounded-xl p-5 border border-purple-700">
             <h3 className="text-emerald-400 font-bold mb-3 flex items-center gap-2">
               <div className="w-3 h-3 bg-emerald-500 rounded-full" />
-              Grupo C - 5% Comisión ({stats.nivelC.length} referidos)
+              Grupo C - 2% Comisión ({stats.nivelC.length} referidos)
             </h3>
             {stats.nivelC.length > 0 ? (
               <ul className="space-y-2">

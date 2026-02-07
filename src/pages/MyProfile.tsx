@@ -248,6 +248,28 @@ function MyProfile() {
           </button>
 
           <button
+            onClick={() => navigate('/informacion-personal')}
+            className="w-full flex items-center justify-between p-4 bg-purple-800 rounded-lg hover:bg-purple-700 transition-colors shadow-sm border border-purple-700"
+          >
+            <div className="flex items-center gap-3">
+              <Info className="w-5 h-5 text-yellow-400" />
+              <span className="text-white font-medium">Información Personal</span>
+            </div>
+            <span className="text-yellow-400">›</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/formas-de-ganar')}
+            className="w-full flex items-center justify-between p-4 bg-purple-800 rounded-lg hover:bg-purple-700 transition-colors shadow-sm border border-purple-700"
+          >
+            <div className="flex items-center gap-3">
+              <DollarSign className="w-5 h-5 text-yellow-400" />
+              <span className="text-white font-medium">Formas de Ganar Dinero</span>
+            </div>
+            <span className="text-yellow-400">›</span>
+          </button>
+
+          <button
             onClick={handleLogOut}
             className="w-full flex items-center justify-between p-4 bg-red-900 hover:bg-red-800 rounded-lg transition-colors shadow-sm mt-6 border border-red-700"
           >

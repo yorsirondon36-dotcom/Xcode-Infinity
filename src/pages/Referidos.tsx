@@ -149,13 +149,13 @@ function Referidos() {
                     </span>
                   </div>
                   <div className="flex justify-between items-center bg-purple-900 rounded-lg p-4">
-                    <span className="text-purple-200">Nivel 2 - 10%</span>
+                    <span className="text-purple-200">Nivel 2 - 4%</span>
                     <span className="font-bold text-green-400">
                       ${purchaseByLevel[2].toLocaleString('es-CO', { maximumFractionDigits: 0 })}
                     </span>
                   </div>
                   <div className="flex justify-between items-center bg-purple-900 rounded-lg p-4">
-                    <span className="text-purple-200">Nivel 3 - 5%</span>
+                    <span className="text-purple-200">Nivel 3 - 2%</span>
                     <span className="font-bold text-green-400">
                       ${purchaseByLevel[3].toLocaleString('es-CO', { maximumFractionDigits: 0 })}
                     </span>

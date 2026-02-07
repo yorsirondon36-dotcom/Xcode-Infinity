@@ -14,11 +14,11 @@ function FormasDeGanarPage() {
         <h1 className="text-2xl font-bold text-white">Formas de Ganar Dinero</h1>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-4 h-[calc(100vh-180px)]">
+      <div className="flex justify-center p-6">
         <img
           src="/whatsapp_image_2026-02-06_at_9.53.09_pm.jpeg"
           alt="Reglas de Ingresos de Inversión"
-          className="w-11/12 h-auto rounded-xl shadow-lg object-cover"
+          className="w-11/12 h-auto rounded-xl shadow-lg"
         />
       </div>
 

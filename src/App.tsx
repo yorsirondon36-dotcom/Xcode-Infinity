@@ -19,6 +19,7 @@ import MiEquipo from './pages/MiEquipo';
 import About from './pages/About';
 import InformacionPersonalPage from './pages/InformacionPersonalPage';
 import FormasDeGanarPage from './pages/FormasDeGanarPage';
+import ReglesInversionPage from './pages/ReglesInversionPage';
 import ReferralRegistry from './components/ReferralRegistry';
 
 function ProtectedRoute({ element }: { element: React.ReactNode }) {
@@ -58,6 +59,7 @@ function App() {
           <Route path="/about" element={<ProtectedRoute element={<About />} />} />
           <Route path="/informacion-personal" element={<ProtectedRoute element={<InformacionPersonalPage />} />} />
           <Route path="/formas-de-ganar" element={<ProtectedRoute element={<FormasDeGanarPage />} />} />
+          <Route path="/regles-inversion" element={<ProtectedRoute element={<ReglesInversionPage />} />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

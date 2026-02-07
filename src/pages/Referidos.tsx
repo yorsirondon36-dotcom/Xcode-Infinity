@@ -143,7 +143,7 @@ function Referidos() {
                 <h3 className="text-lg font-semibold text-yellow-400 mb-4">Comisiones por Compra de Niveles</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center bg-purple-900 rounded-lg p-4">
-                    <span className="text-purple-200">Nivel 1 (Directo) - 20%</span>
+                    <span className="text-purple-200">Nivel 1 (Directo) - 12%</span>
                     <span className="font-bold text-green-400">
                       ${purchaseByLevel[1].toLocaleString('es-CO', { maximumFractionDigits: 0 })}
                     </span>

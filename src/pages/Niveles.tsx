@@ -67,7 +67,7 @@ function Niveles() {
       earningPerVideo: 5600,
       dailyEarning: 168000,
       monthlyEarning: 5040000,
-      disabled: false
+      disabled: true
     },
     {
       id: 'vip5',

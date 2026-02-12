@@ -16,7 +16,7 @@ interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   loading: boolean;
-  signUp: (email: string, password: string, phone: string, name: string) => Promise<void>;
+  signUp: (email: string, password: string, phone: string, name: string, referralCode?: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, phone: string, name: string) => {
+  const signUp = async (email: string, password: string, phone: string, name: string, referralCode?: string) => {
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
@@ -65,13 +65,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (authError) throw authError;
 
       if (authData.user) {
+        const userData: any = {
+          id: authData.user.id,
+          phone,
+          full_name: name
+        };
+
+        if (referralCode) {
+          userData.referred_by_code = referralCode;
+        }
+
         const { error: profileError } = await supabase
           .from('users')
-          .insert({
-            id: authData.user.id,
-            phone,
-            full_name: name
-          });
+          .insert(userData);
 
         if (profileError) throw profileError;
         await fetchUserProfile(authData.user.id);

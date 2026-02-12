@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Phone, Lock, Eye, EyeOff, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 function Register() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { signUp } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
@@ -19,14 +20,25 @@ function Register() {
   const [showWithdrawalPassword, setShowWithdrawalPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [hasReferralFromUrl, setHasReferralFromUrl] = useState(false);
 
   useEffect(() => {
-    const generatedCode = 'REF' + Math.random().toString(36).substr(2, 6).toUpperCase();
-    setFormData(prev => ({
-      ...prev,
-      referralCode: generatedCode
-    }));
-  }, []);
+    const urlReferralCode = searchParams.get('ref');
+    if (urlReferralCode) {
+      setFormData(prev => ({
+        ...prev,
+        referralCode: urlReferralCode
+      }));
+      setHasReferralFromUrl(true);
+    } else {
+      const generatedCode = 'REF' + Math.random().toString(36).substr(2, 6).toUpperCase();
+      setFormData(prev => ({
+        ...prev,
+        referralCode: generatedCode
+      }));
+      setHasReferralFromUrl(false);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +51,7 @@ function Register() {
 
     setLoading(true);
     try {
-      await signUp(formData.email, formData.password, formData.phone, formData.name);
+      await signUp(formData.email, formData.password, formData.phone, formData.name, formData.referralCode);
       navigate('/mi-perfil');
     } catch (err: any) {
       setError(err.message || 'Error al crear la cuenta');
@@ -203,7 +215,7 @@ function Register() {
 
             <div>
               <label htmlFor="referralCode" className="block text-white text-sm font-medium mb-2">
-                Referido Automático
+                {hasReferralFromUrl ? 'Código de referido' : 'Referido Automático'}
               </label>
               <div className="relative">
                 <Users className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -212,8 +224,13 @@ function Register() {
                   id="referralCode"
                   name="referralCode"
                   value={formData.referralCode}
-                  readOnly
-                  className="w-full pl-12 pr-4 py-3 rounded-lg bg-purple-800 border border-purple-600 text-white placeholder-gray-400 focus:outline-none cursor-not-allowed opacity-75"
+                  onChange={handleChange}
+                  readOnly={!hasReferralFromUrl}
+                  className={`w-full pl-12 pr-4 py-3 rounded-lg bg-purple-800 border border-purple-600 text-white placeholder-gray-400 focus:outline-none ${
+                    hasReferralFromUrl
+                      ? 'focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20'
+                      : 'cursor-not-allowed opacity-75'
+                  }`}
                   placeholder="Código de referido"
                 />
               </div>

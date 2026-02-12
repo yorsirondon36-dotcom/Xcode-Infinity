@@ -1,9 +1,17 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DollarSign, Users, TrendingUp } from 'lucide-react';
 
 function Welcome() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const referralCode = searchParams.get('ref');
+    if (referralCode) {
+      navigate(`/registro?ref=${referralCode}`);
+    }
+  }, [searchParams, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 to-purple-950 flex flex-col items-center justify-center px-6 py-12">

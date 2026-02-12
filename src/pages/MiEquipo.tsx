@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { ArrowLeft, Users, Zap } from 'lucide-react';
+import { ArrowLeft, Users, Zap, Copy, Check } from 'lucide-react';
 
 interface Referido {
   id: string;
@@ -19,6 +19,11 @@ interface EquipoStats {
   comisionC: number;
 }
 
+interface Toast {
+  id: number;
+  message: string;
+}
+
 const MiEquipo = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -30,8 +35,10 @@ const MiEquipo = () => {
     comisionB: 0,
     comisionC: 0
   });
+  const [referralCode, setReferralCode] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
   useEffect(() => {
     if (user?.id) {
@@ -39,10 +46,39 @@ const MiEquipo = () => {
     }
   }, [user]);
 
+  const showToast = (message: string) => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 2000);
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('¡Copiado!');
+    } catch (err) {
+      showToast('Error al copiar');
+    }
+  };
+
   const fetchEquipoData = async () => {
     setIsLoading(true);
     setError(null);
     try {
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('referral_code')
+        .eq('id', user?.id)
+        .maybeSingle();
+
+      if (userError) throw userError;
+
+      if (userData?.referral_code) {
+        setReferralCode(userData.referral_code);
+      }
+
       const { data: referidos, error: refError } = await supabase
         .from('referrals')
         .select('id, referred_user_id, commission')
@@ -84,6 +120,10 @@ const MiEquipo = () => {
 
   const totalReferidos = stats.nivelA.length + stats.nivelB.length + stats.nivelC.length;
 
+  const invitationLink = referralCode
+    ? `${window.location.origin}?ref=${referralCode}`
+    : '';
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 to-purple-950 pb-24">
       <div className="bg-purple-800 px-6 py-6 shadow-sm flex items-center gap-4 border-b border-purple-700">
@@ -93,6 +133,16 @@ const MiEquipo = () => {
         <h1 className="text-2xl font-bold text-yellow-400">Mi Equipo</h1>
       </div>
 
+      {toasts.map(toast => (
+        <div
+          key={toast.id}
+          className="fixed bottom-8 right-6 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in z-50"
+        >
+          <Check className="w-5 h-5" />
+          {toast.message}
+        </div>
+      ))}
+
       {error && (
         <div className="m-4 p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-200">
           {error}
@@ -100,6 +150,39 @@ const MiEquipo = () => {
       )}
 
       <div className="p-6 space-y-6 max-w-2xl mx-auto">
+        {referralCode && (
+          <div className="space-y-4">
+            <div className="bg-purple-800 rounded-xl p-6 shadow-md border border-purple-700">
+              <h2 className="text-lg font-bold text-yellow-400 mb-4">Código recomendado</h2>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1 bg-purple-900/50 rounded-lg p-4 border border-purple-600">
+                  <p className="text-center text-orange-400 font-bold text-2xl tracking-widest">{referralCode}</p>
+                </div>
+                <button
+                  onClick={() => copyToClipboard(referralCode)}
+                  className="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-lg transition-colors flex-shrink-0"
+                >
+                  <Copy className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-purple-800 rounded-xl p-6 shadow-md border border-purple-700">
+              <h2 className="text-lg font-bold text-yellow-400 mb-4">Copiar enlace de invitación</h2>
+              <div className="bg-purple-900/50 rounded-lg p-4 border border-purple-600 mb-4">
+                <p className="text-gray-300 text-sm break-all">{invitationLink}</p>
+              </div>
+              <button
+                onClick={() => copyToClipboard(invitationLink)}
+                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <Copy className="w-5 h-5" />
+                Copiar enlace
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="bg-purple-800 rounded-xl p-5 shadow-md border-t-4 border-orange-500">
             <div className="flex items-center justify-between mb-2">

@@ -10,6 +10,7 @@ interface UserProfile {
   total_income: number;
   current_level_id: string | null;
   banking_info: any;
+  registration_id?: number;
 }
 
 interface AuthContextType {

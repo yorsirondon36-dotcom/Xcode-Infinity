@@ -16,8 +16,8 @@ interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   loading: boolean;
-  signUp: (email: string, password: string, phone: string, name: string, referralCode?: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (phone: string, password: string, name: string, referralCode?: string) => Promise<void>;
+  signIn: (phone: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -55,10 +55,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, phone: string, name: string, referralCode?: string) => {
+  const signUp = async (phone: string, password: string, name: string, referralCode?: string) => {
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
+        email: `${phone}@phone.local`,
         password
       });
 
@@ -88,10 +88,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (phone: string, password: string) => {
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: `${phone}@phone.local`,
         password
       });
 

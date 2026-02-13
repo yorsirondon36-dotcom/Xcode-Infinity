@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
@@ -10,17 +10,23 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    email: '',
+    phone: '',
     password: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!formData.phone || formData.phone.trim() === '') {
+      setError('Por favor ingresa tu número de teléfono');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await signIn(formData.email, formData.password);
+      await signIn(formData.phone, formData.password);
       navigate('/mi-perfil');
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión');
@@ -58,19 +64,25 @@ function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-white text-sm font-medium mb-2">
-                Correo electrónico
+              <label htmlFor="phone" className="block text-white text-sm font-medium mb-2">
+                Número de teléfono
               </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg bg-purple-800 border border-purple-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20"
-                placeholder="correo@ejemplo.com"
-                required
-              />
+              <div className="flex gap-2">
+                <div className="flex items-center px-4 py-3 rounded-lg bg-purple-800 border border-purple-600 text-white">
+                  <Phone className="w-5 h-5 mr-2 flex-shrink-0" />
+                  <span className="font-medium">+57</span>
+                </div>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="flex-1 px-4 py-3 rounded-lg bg-purple-800 border border-purple-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20"
+                  placeholder="300 123 4567"
+                  required
+                />
+              </div>
             </div>
 
             <div>

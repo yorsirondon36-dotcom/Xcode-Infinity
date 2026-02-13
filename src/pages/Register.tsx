@@ -9,7 +9,6 @@ function Register() {
   const { signUp } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
     phone: '',
     password: '',
     confirmPassword: '',
@@ -45,6 +44,11 @@ function Register() {
     e.preventDefault();
     setError('');
 
+    if (!formData.phone || formData.phone.trim() === '') {
+      setError('Por favor ingresa tu número de teléfono');
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError('Las contraseñas no coinciden');
       return;
@@ -52,7 +56,7 @@ function Register() {
 
     setLoading(true);
     try {
-      await signUp(formData.email, formData.password, formData.phone, formData.name, formData.referralCode);
+      await signUp(formData.phone, formData.password, formData.name, formData.referralCode);
       navigate('/mi-perfil');
     } catch (err: any) {
       setError(err.message || 'Error al crear la cuenta');
@@ -101,22 +105,6 @@ function Register() {
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-lg bg-purple-800 border border-purple-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20"
                 placeholder="Tu nombre"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-white text-sm font-medium mb-2">
-                Correo electrónico
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg bg-purple-800 border border-purple-600 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20"
-                placeholder="correo@ejemplo.com"
                 required
               />
             </div>

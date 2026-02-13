@@ -12,7 +12,7 @@ interface LocationState {
 function PaymentQRPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const state = location.state as LocationState;
 
   const [orderNumber, setOrderNumber] = useState('');
@@ -22,6 +22,11 @@ function PaymentQRPage() {
   const amount = state?.amount || 60000;
 
   useEffect(() => {
+    if (!user || !userProfile) {
+      navigate('/login');
+      return;
+    }
+
     const generateOrderNumber = () => {
       const timestamp = Date.now();
       const random = Math.floor(Math.random() * 10000);
@@ -29,7 +34,7 @@ function PaymentQRPage() {
       setOrderNumber(order);
     };
     generateOrderNumber();
-  }, []);
+  }, [user, userProfile, navigate]);
 
   const handleSubmit = async () => {
     if (!referenceCode.trim()) {
@@ -37,7 +42,7 @@ function PaymentQRPage() {
       return;
     }
 
-    if (!user) {
+    if (!user || !userProfile) {
       setError('Usuario no autenticado');
       return;
     }
@@ -49,7 +54,7 @@ function PaymentQRPage() {
       const { error: insertError } = await supabase
         .from('transactions')
         .insert({
-          user_id: user.id,
+          user_id: userProfile.id,
           order_number: orderNumber,
           amount: amount,
           reference_code: referenceCode,
@@ -57,7 +62,10 @@ function PaymentQRPage() {
           status: 'pending'
         });
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Insert error:', insertError);
+        throw insertError;
+      }
 
       navigate('/confirmacion', {
         state: {
@@ -66,9 +74,9 @@ function PaymentQRPage() {
           referenceCode
         }
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error:', err);
-      setError('Error al procesar la recarga. Intenta nuevamente.');
+      setError(err.message || 'Error al procesar la recarga. Intenta nuevamente.');
     } finally {
       setIsLoading(false);
     }

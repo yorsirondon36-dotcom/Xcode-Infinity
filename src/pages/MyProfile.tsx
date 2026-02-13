@@ -100,7 +100,7 @@ function MyProfile() {
     <div className="min-h-screen bg-gradient-to-b from-purple-900 to-purple-950 pb-24">
       {/* Header with ID */}
       <div className="bg-purple-800 px-6 py-6 shadow-sm border-b border-purple-700">
-        <h1 className="text-2xl font-bold text-yellow-400">ID {userData?.registration_id || 'N/A'}</h1>
+        <h1 className="text-2xl font-bold text-yellow-400">ID {userData?.phone || 'N/A'}</h1>
         <p className="text-purple-200 text-sm mt-1">Tu cuenta</p>
       </div>
 

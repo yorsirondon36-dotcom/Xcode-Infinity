@@ -138,7 +138,7 @@ function MyProfile() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-purple-200 text-sm font-medium">Mi saldo</p>
-              <p className="text-2xl font-bold text-yellow-400 mt-2">${userData?.balance.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-yellow-400 mt-2">COP {userData?.balance?.toLocaleString('es-CO') || '0'}</p>
             </div>
             <DollarSign className="w-10 h-10 text-yellow-400" />
           </div>
@@ -149,7 +149,7 @@ function MyProfile() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-200 text-xs font-medium">Ingresos hoy</p>
-                <p className="text-xl font-bold text-yellow-400 mt-1">${userData?.daily_income.toFixed(2)}</p>
+                <p className="text-xl font-bold text-yellow-400 mt-1">COP {userData?.daily_income?.toLocaleString('es-CO') || '0'}</p>
               </div>
               <TrendingUp className="w-8 h-8 text-yellow-400" />
             </div>
@@ -159,7 +159,7 @@ function MyProfile() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-200 text-xs font-medium">Ingresos totales</p>
-                <p className="text-xl font-bold text-yellow-400 mt-1">${userData?.total_income.toFixed(2)}</p>
+                <p className="text-xl font-bold text-yellow-400 mt-1">COP {userData?.total_income?.toLocaleString('es-CO') || '0'}</p>
               </div>
               <BarChart3 className="w-8 h-8 text-yellow-400" />
             </div>

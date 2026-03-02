@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { ProveedorAutenticacion, useAuth } from './context/AuthContext';
 import Welcome from './pages/Welcome';
 import Register from './pages/Register';
 import Login from './pages/Login';
@@ -22,10 +22,10 @@ import FormasDeGanarPage from './pages/FormasDeGanarPage';
 import ReglesInversionPage from './pages/ReglesInversionPage';
 import ReferralRegistry from './components/ReferralRegistry';
 
-function ProtectedRoute({ element }: { element: React.ReactNode }) {
-  const { user, loading } = useAuth();
+function RutaProtegida({ element }: { element: React.ReactNode }) {
+  const { usuario, cargando } = useAuth();
 
-  if (loading) {
+  if (cargando) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p>Cargando...</p>
@@ -33,35 +33,35 @@ function ProtectedRoute({ element }: { element: React.ReactNode }) {
     );
   }
 
-  return user ? element : <Navigate to="/login" replace />;
+  return usuario ? element : <Navigate to="/login" replace />;
 }
 
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
+      <ProveedorAutenticacion>
         <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/registro" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/mi-perfil" element={<ProtectedRoute element={<MyProfile />} />} />
-          <Route path="/niveles" element={<ProtectedRoute element={<Niveles />} />} />
-          <Route path="/tareas" element={<ProtectedRoute element={<Tareas />} />} />
-          <Route path="/referidos" element={<ProtectedRoute element={<Referidos />} />} />
-          <Route path="/recargas" element={<ProtectedRoute element={<Recargas />} />} />
-          <Route path="/pago-qr" element={<ProtectedRoute element={<PaymentQRPage />} />} />
-          <Route path="/confirmacion" element={<ProtectedRoute element={<ConfirmationPage />} />} />
-          <Route path="/retiros" element={<ProtectedRoute element={<Retiros />} />} />
-          <Route path="/registro-recargas" element={<ProtectedRoute element={<RegistroRecargas />} />} />
-          <Route path="/registro-retiros" element={<ProtectedRoute element={<RegistroRetiros />} />} />
-          <Route path="/cuenta-bancaria" element={<ProtectedRoute element={<CuentaBancaria />} />} />
-          <Route path="/mi-equipo" element={<ProtectedRoute element={<MiEquipo />} />} />
-          <Route path="/about" element={<ProtectedRoute element={<About />} />} />
-          <Route path="/informacion-personal" element={<ProtectedRoute element={<InformacionPersonalPage />} />} />
-          <Route path="/formas-de-ganar" element={<ProtectedRoute element={<FormasDeGanarPage />} />} />
-          <Route path="/regles-inversion" element={<ProtectedRoute element={<ReglesInversionPage />} />} />
+          <Route path="/mi-perfil" element={<RutaProtegida element={<MyProfile />} />} />
+          <Route path="/niveles" element={<RutaProtegida element={<Niveles />} />} />
+          <Route path="/tareas" element={<RutaProtegida element={<Tareas />} />} />
+          <Route path="/referidos" element={<RutaProtegida element={<Referidos />} />} />
+          <Route path="/recargas" element={<RutaProtegida element={<Recargas />} />} />
+          <Route path="/pago-qr" element={<RutaProtegida element={<PaymentQRPage />} />} />
+          <Route path="/confirmacion" element={<RutaProtegida element={<ConfirmationPage />} />} />
+          <Route path="/retiros" element={<RutaProtegida element={<Retiros />} />} />
+          <Route path="/registro-recargas" element={<RutaProtegida element={<RegistroRecargas />} />} />
+          <Route path="/registro-retiros" element={<RutaProtegida element={<RegistroRetiros />} />} />
+          <Route path="/cuenta-bancaria" element={<RutaProtegida element={<CuentaBancaria />} />} />
+          <Route path="/mi-equipo" element={<RutaProtegida element={<MiEquipo />} />} />
+          <Route path="/about" element={<RutaProtegida element={<About />} />} />
+          <Route path="/informacion-personal" element={<RutaProtegida element={<InformacionPersonalPage />} />} />
+          <Route path="/formas-de-ganar" element={<RutaProtegida element={<FormasDeGanarPage />} />} />
+          <Route path="/regles-inversion" element={<RutaProtegida element={<ReglesInversionPage />} />} />
         </Routes>
-      </AuthProvider>
+      </ProveedorAutenticacion>
     </BrowserRouter>
   );
 }

@@ -2,110 +2,110 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { getStoredSession, setStoredSession, signOut as authSignOut, signUpWithPhone as authSignUpWithPhone, signInWithPhone as authSignInWithPhone } from '../lib/auth';
 
-interface UserSession {
+interface SesionUsuario {
   id: string;
-  phone: string;
-  full_name: string;
+  telefono: string;
+  nombre_completo: string;
 }
 
-interface UserProfile {
+interface PerfilUsuario {
   id: string;
-  phone: string;
-  full_name: string;
+  telefono: string;
+  nombre_completo: string;
   balance: number;
-  total_income: number;
-  current_level_id: string | null;
-  banking_info: any;
-  registration_id?: number;
+  ingresos_totales: number;
+  id_nivel_actual: string | null;
+  informacion_bancaria: any;
+  id_registro?: number;
 }
 
-interface AuthContextType {
-  user: UserSession | null;
-  userProfile: UserProfile | null;
-  loading: boolean;
-  signUp: (phone: string, password: string, name: string, referralCode?: string) => Promise<void>;
-  signIn: (phone: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
+interface TipoContextoAutenticacion {
+  usuario: SesionUsuario | null;
+  perfilUsuario: PerfilUsuario | null;
+  cargando: boolean;
+  registrarse: (telefono: string, contrasena: string, nombre: string, codigoReferencia?: string) => Promise<void>;
+  iniciarSesion: (telefono: string, contrasena: string) => Promise<void>;
+  cerrarSesion: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const ContextoAutenticacion = createContext<TipoContextoAutenticacion | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserSession | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+export function ProveedorAutenticacion({ children }: { children: React.ReactNode }) {
+  const [usuario, setUsuario] = useState<SesionUsuario | null>(null);
+  const [perfilUsuario, setPerfilUsuario] = useState<PerfilUsuario | null>(null);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    const session = getStoredSession();
-    if (session) {
-      setUser(session);
-      fetchUserProfile(session.id);
+    const sesion = getStoredSession();
+    if (sesion) {
+      setUsuario(sesion);
+      obtenerPerfilUsuario(sesion.id);
     } else {
-      setLoading(false);
+      setCargando(false);
     }
   }, []);
 
-  const fetchUserProfile = async (userId: string) => {
+  const obtenerPerfilUsuario = async (idUsuario: string) => {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('usuarios')
         .select('*')
-        .eq('id', userId)
+        .eq('id', idUsuario)
         .maybeSingle();
 
       if (error) throw error;
-      setUserProfile(data);
+      setPerfilUsuario(data);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('Error al obtener perfil del usuario:', error);
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
   };
 
-  const signUp = async (phone: string, password: string, name: string, referralCode?: string) => {
+  const registrarse = async (telefono: string, contrasena: string, nombre: string, codigoReferencia?: string) => {
     try {
-      const session = await authSignUpWithPhone(phone, password, name, referralCode);
-      setUser(session);
-      await fetchUserProfile(session.id);
+      const sesion = await authSignUpWithPhone(telefono, contrasena, nombre, codigoReferencia);
+      setUsuario(sesion);
+      await obtenerPerfilUsuario(sesion.id);
     } catch (error) {
-      console.error('Sign up error:', error);
+      console.error('Error al registrarse:', error);
       throw error;
     }
   };
 
-  const signIn = async (phone: string, password: string) => {
+  const iniciarSesion = async (telefono: string, contrasena: string) => {
     try {
-      const session = await authSignInWithPhone(phone, password);
-      setUser(session);
-      await fetchUserProfile(session.id);
+      const sesion = await authSignInWithPhone(telefono, contrasena);
+      setUsuario(sesion);
+      await obtenerPerfilUsuario(sesion.id);
     } catch (error) {
-      console.error('Sign in error:', error);
+      console.error('Error al iniciar sesión:', error);
       throw error;
     }
   };
 
-  const signOut = async () => {
+  const cerrarSesion = async () => {
     try {
       authSignOut();
-      setUser(null);
-      setUserProfile(null);
+      setUsuario(null);
+      setPerfilUsuario(null);
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error('Error al cerrar sesión:', error);
       throw error;
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, userProfile, loading, signUp, signIn, signOut }}>
+    <ContextoAutenticacion.Provider value={{ usuario, perfilUsuario, cargando, registrarse, iniciarSesion, cerrarSesion }}>
       {children}
-    </AuthContext.Provider>
+    </ContextoAutenticacion.Provider>
   );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const context = useContext(ContextoAutenticacion);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth debe ser usado dentro de un ProveedorAutenticacion');
   }
   return context;
 }

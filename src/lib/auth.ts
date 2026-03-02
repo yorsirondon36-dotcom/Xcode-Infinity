@@ -1,104 +1,111 @@
 import bcryptjs from 'bcryptjs';
 import { supabase } from './supabase';
 
-const SESSION_KEY = 'user_session';
+const CLAVE_SESION = 'sesion_usuario';
 
-interface UserSession {
+interface SesionUsuario {
   id: string;
-  phone: string;
-  full_name: string;
+  telefono: string;
+  nombre_completo: string;
 }
 
-export const generateReferralCode = (): string => {
+export const generarCodigoReferencia = (): string => {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
 };
 
-export const hashPassword = async (password: string): Promise<string> => {
-  return bcryptjs.hash(password, 10);
+export const hashearContrasena = async (contrasena: string): Promise<string> => {
+  return bcryptjs.hash(contrasena, 10);
 };
 
-export const verifyPassword = async (password: string, hash: string): Promise<boolean> => {
-  return bcryptjs.compare(password, hash);
+export const verificarContrasena = async (contrasena: string, hash: string): Promise<boolean> => {
+  return bcryptjs.compare(contrasena, hash);
 };
 
-export const getStoredSession = (): UserSession | null => {
-  const stored = localStorage.getItem(SESSION_KEY);
-  if (!stored) return null;
+export const obtenerSesionAlmacenada = (): SesionUsuario | null => {
+  const almacenada = localStorage.getItem(CLAVE_SESION);
+  if (!almacenada) return null;
   try {
-    return JSON.parse(stored);
+    return JSON.parse(almacenada);
   } catch {
     return null;
   }
 };
 
-export const setStoredSession = (session: UserSession): void => {
-  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+export const guardarSesion = (sesion: SesionUsuario): void => {
+  localStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
 };
 
-export const clearStoredSession = (): void => {
-  localStorage.removeItem(SESSION_KEY);
+export const limpiarSesion = (): void => {
+  localStorage.removeItem(CLAVE_SESION);
 };
 
-export const signUpWithPhone = async (
-  phone: string,
-  password: string,
-  fullName: string,
-  referralCode?: string
-): Promise<UserSession> => {
-  const passwordHash = await hashPassword(password);
-  const newReferralCode = generateReferralCode();
+export const registrarseConTelefono = async (
+  telefono: string,
+  contrasena: string,
+  nombreCompleto: string,
+  codigoReferencia?: string
+): Promise<SesionUsuario> => {
+  const hashContrasena = await hashearContrasena(contrasena);
+  const nuevoCodigoReferencia = generarCodigoReferencia();
 
   const { data, error } = await supabase
-    .from('users')
+    .from('usuarios')
     .insert([{
-      phone,
-      password_hash: passwordHash,
-      full_name: fullName,
-      referral_code: newReferralCode,
-      referred_by_code: referralCode || null,
+      telefono,
+      contrasena_hash: hashContrasena,
+      nombre_completo: nombreCompleto,
+      codigo_referencia: nuevoCodigoReferencia,
+      referido_por_codigo: codigoReferencia || null,
     }])
-    .select('id, phone, full_name')
+    .select('id, telefono, nombre_completo')
     .single();
 
   if (error) throw error;
-  if (!data) throw new Error('Failed to create user');
+  if (!data) throw new Error('Error al crear el usuario');
 
-  const session: UserSession = {
+  const sesion: SesionUsuario = {
     id: data.id,
-    phone: data.phone,
-    full_name: data.full_name,
+    telefono: data.telefono,
+    nombre_completo: data.nombre_completo,
   };
 
-  setStoredSession(session);
-  return session;
+  guardarSesion(sesion);
+  return sesion;
 };
 
-export const signInWithPhone = async (
-  phone: string,
-  password: string
-): Promise<UserSession> => {
+export const iniciarSesionConTelefono = async (
+  telefono: string,
+  contrasena: string
+): Promise<SesionUsuario> => {
   const { data, error } = await supabase
-    .from('users')
-    .select('id, phone, full_name, password_hash')
-    .eq('phone', phone)
+    .from('usuarios')
+    .select('id, telefono, nombre_completo, contrasena_hash')
+    .eq('telefono', telefono)
     .maybeSingle();
 
   if (error) throw error;
-  if (!data) throw new Error('Invalid phone or password');
+  if (!data) throw new Error('Teléfono o contraseña inválidos');
 
-  const isPasswordValid = await verifyPassword(password, data.password_hash);
-  if (!isPasswordValid) throw new Error('Invalid phone or password');
+  const esContrasenaValida = await verificarContrasena(contrasena, data.contrasena_hash);
+  if (!esContrasenaValida) throw new Error('Teléfono o contraseña inválidos');
 
-  const session: UserSession = {
+  const sesion: SesionUsuario = {
     id: data.id,
-    phone: data.phone,
-    full_name: data.full_name,
+    telefono: data.telefono,
+    nombre_completo: data.nombre_completo,
   };
 
-  setStoredSession(session);
-  return session;
+  guardarSesion(sesion);
+  return sesion;
 };
 
-export const signOut = (): void => {
-  clearStoredSession();
+export const cerrarSesion = (): void => {
+  limpiarSesion();
 };
+
+export const getStoredSession = (): SesionUsuario | null => obtenerSesionAlmacenada();
+export const setStoredSession = (sesion: SesionUsuario): void => guardarSesion(sesion);
+export const clearStoredSession = (): void => limpiarSesion();
+export const signUpWithPhone = (telefono: string, contrasena: string, nombreCompleto: string, codigoReferencia?: string) => registrarseConTelefono(telefono, contrasena, nombreCompleto, codigoReferencia);
+export const signInWithPhone = (telefono: string, contrasena: string) => iniciarSesionConTelefono(telefono, contrasena);
+export const signOut = cerrarSesion;

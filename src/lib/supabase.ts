@@ -27,38 +27,52 @@ export interface Usuario {
 }
 
 export interface Nivel {
-  id: string;
+  identificacion: string;
   nombre: string;
-  descripcion: string;
-  precio_acceso: number;
-  limite_videos_diarios: number;
-  ganancias_por_video: number;
-  porcentaje_comision_referidos: number;
+  precio: number;
+  videos_diarios_limitados: number;
+  ganancia_por_video: number;
+  creado_en: string;
+  actualizado_en: string;
 }
 
-export interface TareaVideo {
-  id: string;
-  titulo: string;
+export interface TareasVideos {
+  identificacion: string;
+  título: string;
   url_imagen: string;
   url_video: string;
   recompensa: number;
-  id_nivel_requerido: string;
-  duracion_segundos: number;
+  nivel_requerido_id: string;
+  duración_segundos: number;
   esta_activo: boolean;
   creado_en: string;
+  actualizado_en: string;
 }
 
-export interface HistorialVideoUsuario {
-  id: string;
+export interface Actas {
+  identificacion: string;
+  id_usuario: string;
+  tipo: string;
+  cantidad: number;
+  estado: string;
+  método_pago: string;
+  comprobante_url: string | null;
+  creado_en: string;
+  actualizado_en: string;
+}
+
+export interface HistorialVideosUsuarios {
+  identificacion: string;
   id_usuario: string;
   id_tarea_video: string;
   completado_en: string;
   ganancias_recibidas: number;
-  calificacion?: number;
+  calificación?: number;
+  creado_en: string;
 }
 
-export interface GananciaReferido {
-  id: string;
+export interface GananciasReferidos {
+  identificacion: string;
   id_usuario_referidor: string;
   id_usuario_referido: string;
   monto_comision: number;
@@ -66,13 +80,13 @@ export interface GananciaReferido {
   creado_en: string;
 }
 
-export interface Transaccion {
-  id: string;
+export interface Transacciones {
+  identificacion: string;
   id_usuario: string;
-  tipo: 'recarga' | 'retiro' | 'comision_video' | 'comision_referido';
+  tipo: string;
   monto: number;
-  estado: 'pendiente' | 'aprobado' | 'rechazado';
-  url_comprobante?: string;
+  estado: string;
+  comprobante_url?: string;
   notas?: string;
   creado_en: string;
   actualizado_en: string;
@@ -88,28 +102,33 @@ export type Database = {
       };
       niveles: {
         Row: Nivel;
-        Insert: Omit<Nivel, 'id'>;
+        Insert: Omit<Nivel, 'identificacion' | 'creado_en' | 'actualizado_en'>;
         Update: Partial<Nivel>;
       };
       tareas_videos: {
-        Row: TareaVideo;
-        Insert: Omit<TareaVideo, 'id' | 'creado_en'>;
-        Update: Partial<TareaVideo>;
+        Row: TareasVideos;
+        Insert: Omit<TareasVideos, 'identificacion' | 'creado_en' | 'actualizado_en'>;
+        Update: Partial<TareasVideos>;
       };
       historial_videos_usuarios: {
-        Row: HistorialVideoUsuario;
-        Insert: Omit<HistorialVideoUsuario, 'id'>;
-        Update: Partial<HistorialVideoUsuario>;
+        Row: HistorialVideosUsuarios;
+        Insert: Omit<HistorialVideosUsuarios, 'identificacion' | 'creado_en'>;
+        Update: Partial<HistorialVideosUsuarios>;
       };
       ganancias_referidos: {
-        Row: GananciaReferido;
-        Insert: Omit<GananciaReferido, 'id' | 'creado_en'>;
-        Update: Partial<GananciaReferido>;
+        Row: GananciasReferidos;
+        Insert: Omit<GananciasReferidos, 'identificacion' | 'creado_en'>;
+        Update: Partial<GananciasReferidos>;
       };
       transacciones: {
-        Row: Transaccion;
-        Insert: Omit<Transaccion, 'id' | 'creado_en' | 'actualizado_en'>;
-        Update: Partial<Transaccion>;
+        Row: Transacciones;
+        Insert: Omit<Transacciones, 'identificacion' | 'creado_en' | 'actualizado_en'>;
+        Update: Partial<Transacciones>;
+      };
+      actas: {
+        Row: Actas;
+        Insert: Omit<Actas, 'identificacion' | 'creado_en' | 'actualizado_en'>;
+        Update: Partial<Actas>;
       };
     };
   };

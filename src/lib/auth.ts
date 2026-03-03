@@ -10,7 +10,12 @@ interface SesionUsuario {
 }
 
 export const generarCodigoReferencia = (): string => {
-  return Math.random().toString(36).substring(2, 10).toUpperCase();
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let codigo = '';
+  for (let i = 0; i < 6; i++) {
+    codigo += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return codigo;
 };
 
 export const hashearContrasena = async (contrasena: string): Promise<string> => {
@@ -52,10 +57,14 @@ export const registrarseConTelefono = async (
     .from('usuarios')
     .insert([{
       telefono,
-      contrasena_hash: hashContrasena,
+      contrasena: hashContrasena,
       nombre_completo: nombreCompleto,
       codigo_referencia: nuevoCodigoReferencia,
       referido_por_codigo: codigoReferencia || null,
+      balance: 0,
+      ingresos_totales: 0,
+      ingresos_hoy: 0,
+      videos_vistas_hoy: 0,
     }])
     .select('id, telefono, nombre_completo')
     .single();
@@ -79,14 +88,14 @@ export const iniciarSesionConTelefono = async (
 ): Promise<SesionUsuario> => {
   const { data, error } = await supabase
     .from('usuarios')
-    .select('id, telefono, nombre_completo, contrasena_hash')
+    .select('id, telefono, nombre_completo, contrasena')
     .eq('telefono', telefono)
     .maybeSingle();
 
   if (error) throw error;
   if (!data) throw new Error('Teléfono o contraseña inválidos');
 
-  const esContrasenaValida = await verificarContrasena(contrasena, data.contrasena_hash);
+  const esContrasenaValida = await verificarContrasena(contrasena, data.contrasena);
   if (!esContrasenaValida) throw new Error('Teléfono o contraseña inválidos');
 
   const sesion: SesionUsuario = {

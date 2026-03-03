@@ -27,7 +27,7 @@ function Login() {
 
     try {
       await signIn(formData.phone, formData.password);
-      navigate('/mi-perfil');
+      navigate('/perfil');
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión');
     } finally {

@@ -12,7 +12,7 @@ interface UserData {
 
 function ReferralRegistry() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { usuario } = useAuth();
   const [userData, setUserData] = useState<UserData>({
     referral_code: '',
     total_income: 0,
@@ -22,30 +22,30 @@ function ReferralRegistry() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (user?.id) {
+    if (usuario?.id) {
       loadUserData();
     }
-  }, [user]);
+  }, [usuario]);
 
   const loadUserData = async () => {
     try {
       const { data: userProfile, error } = await supabase
-        .from('users')
-        .select('referral_code, total_income')
-        .eq('id', user?.id)
+        .from('usuarios')
+        .select('codigo_referencia, ingresos_totales')
+        .eq('id', usuario?.id)
         .maybeSingle();
 
       if (error) throw error;
 
       const { count: referralCount } = await supabase
-        .from('referrals')
+        .from('referidos')
         .select('*', { count: 'exact', head: true })
-        .eq('referrer_id', user?.id);
+        .eq('id_referidor', usuario?.id);
 
       if (userProfile) {
         setUserData({
-          referral_code: userProfile.referral_code || 'Generando...',
-          total_income: userProfile.total_income || 0,
+          referral_code: userProfile.codigo_referencia || 'Generando...',
+          total_income: userProfile.ingresos_totales || 0,
           referred_users_count: referralCount || 0
         });
       }

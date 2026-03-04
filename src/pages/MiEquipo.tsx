@@ -26,7 +26,7 @@ interface Toast {
 
 const MiEquipo = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { usuario } = useAuth();
   const [stats, setStats] = useState<EquipoStats>({
     nivelA: [],
     nivelB: [],
@@ -41,10 +41,10 @@ const MiEquipo = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   useEffect(() => {
-    if (user?.id) {
+    if (usuario?.id) {
       fetchEquipoData();
     }
-  }, [user]);
+  }, [usuario]);
 
   const showToast = (message: string) => {
     const id = Date.now();
@@ -68,21 +68,21 @@ const MiEquipo = () => {
     setError(null);
     try {
       const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('referral_code')
-        .eq('id', user?.id)
+        .from('usuarios')
+        .select('codigo_referencia')
+        .eq('id', usuario?.id)
         .maybeSingle();
 
       if (userError) throw userError;
 
-      if (userData?.referral_code) {
-        setReferralCode(userData.referral_code);
+      if (userData?.codigo_referencia) {
+        setReferralCode(userData.codigo_referencia);
       }
 
       const { data: referidos, error: refError } = await supabase
-        .from('referrals')
-        .select('id, referred_user_id, commission')
-        .eq('referrer_id', user?.id);
+        .from('referidos')
+        .select('id, id_usuario_referido, comision')
+        .eq('id_referidor', usuario?.id);
 
       if (refError) throw refError;
 
@@ -90,15 +90,15 @@ const MiEquipo = () => {
       const nivelB = referidos?.slice(Math.ceil((referidos?.length || 0) / 3), Math.ceil((referidos?.length || 0) * 2 / 3)) || [];
       const nivelC = referidos?.slice(Math.ceil((referidos?.length || 0) * 2 / 3)) || [];
 
-      const totalComision = referidos?.reduce((sum, r) => sum + (r.commission || 0), 0) || 0;
+      const totalComision = referidos?.reduce((sum, r) => sum + (r.comision || 0), 0) || 0;
       const comisionA = (totalComision * 0.12) / (nivelA.length || 1);
       const comisionB = (totalComision * 0.04) / (nivelB.length || 1);
       const comisionC = (totalComision * 0.02) / (nivelC.length || 1);
 
       setStats({
-        nivelA: nivelA.map(r => ({ id: r.referred_user_id, email: r.referred_user_id })),
-        nivelB: nivelB.map(r => ({ id: r.referred_user_id, email: r.referred_user_id })),
-        nivelC: nivelC.map(r => ({ id: r.referred_user_id, email: r.referred_user_id })),
+        nivelA: nivelA.map(r => ({ id: r.id_usuario_referido, email: r.id_usuario_referido })),
+        nivelB: nivelB.map(r => ({ id: r.id_usuario_referido, email: r.id_usuario_referido })),
+        nivelC: nivelC.map(r => ({ id: r.id_usuario_referido, email: r.id_usuario_referido })),
         comisionA: Number(comisionA.toFixed(2)),
         comisionB: Number(comisionB.toFixed(2)),
         comisionC: Number(comisionC.toFixed(2))

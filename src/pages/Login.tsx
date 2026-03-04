@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { iniciarSesion } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -26,7 +26,7 @@ function Login() {
     setLoading(true);
 
     try {
-      await signIn(formData.phone, formData.password);
+      await iniciarSesion(formData.phone, formData.password);
       navigate('/perfil');
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión');

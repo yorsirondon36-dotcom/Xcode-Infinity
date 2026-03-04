@@ -13,24 +13,24 @@ interface Withdrawal {
 
 function RegistroRetiros() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { usuario } = useAuth();
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (user) {
+    if (usuario) {
       fetchWithdrawals();
     }
-  }, [user]);
+  }, [usuario]);
 
   const fetchWithdrawals = async () => {
     try {
       setLoading(true);
       const { data, error: fetchError } = await supabase
-        .from('withdrawals')
+        .from('retiros')
         .select('id, amount, status, created_at')
-        .eq('user_id', user?.id)
+        .eq('id_usuario', usuario?.id)
         .order('created_at', { ascending: false });
 
       if (fetchError) throw fetchError;

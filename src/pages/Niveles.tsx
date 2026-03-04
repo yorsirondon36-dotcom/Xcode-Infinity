@@ -23,7 +23,7 @@ interface Toast {
 
 function Niveles() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { usuario } = useAuth();
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [trialStatus, setTrialStatus] = useState<{ isActive: boolean; daysRemaining: number } | null>(null);
   const [loadingTrial, setLoadingTrial] = useState(false);
@@ -122,13 +122,13 @@ function Niveles() {
   ];
 
   useEffect(() => {
-    if (user?.id) {
+    if (usuario?.id) {
       checkTrialStatus();
     }
-  }, [user?.id]);
+  }, [usuario?.id]);
 
   const checkTrialStatus = async () => {
-    if (!user?.id) return;
+    if (!usuario?.id) return;
 
     try {
       const { data: userData } = await supabase
@@ -154,7 +154,7 @@ function Niveles() {
   };
 
   const handleJoinTrial = async () => {
-    if (!user?.id) {
+    if (!usuario?.id) {
       navigate('/login');
       return;
     }
@@ -193,7 +193,7 @@ function Niveles() {
       return;
     }
 
-    if (!user?.id) {
+    if (!usuario?.id) {
       navigate('/login');
       return;
     }

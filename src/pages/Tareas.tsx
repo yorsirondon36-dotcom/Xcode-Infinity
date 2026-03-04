@@ -20,7 +20,7 @@ interface VideoCompletado {
 
 function Tareas() {
   const navigate = useNavigate();
-  const { user, userProfile } = useAuth();
+  const { usuario, perfilUsuario } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const [tareasVideos, setTareasVideos] = useState<TareaVideo[]>([]);
@@ -36,10 +36,10 @@ function Tareas() {
   const [todayEarnings, setTodayEarnings] = useState(0);
 
   useEffect(() => {
-    if (user) {
+    if (usuario) {
       loadData();
     }
-  }, [user]);
+  }, [usuario]);
 
   useEffect(() => {
     if (isPlaying && timeRemaining > 0) {
@@ -87,7 +87,7 @@ function Tareas() {
       const { data: completed } = await supabase
         .from('historial_videos_usuarios')
         .select('id_tarea_video, completado_en')
-        .eq('id_usuario', user.id)
+        .eq('id_usuario', usuario.id)
         .gte('completado_en', `${today}T00:00:00`);
 
       if (completed) {
@@ -131,7 +131,7 @@ function Tareas() {
       const reward = levelInfo.ganancia_por_video;
 
       await supabase.from('historial_videos_usuarios').insert({
-        id_usuario: user.id,
+        id_usuario: usuario.id,
         id_tarea_video: currentVideo.identificacion,
         ganancias_recibidas: reward,
         calificación: rating
@@ -144,7 +144,7 @@ function Tareas() {
           ganancias_hoy: todayEarnings + reward,
           videos_vistos_hoy: (userProfile?.videos_vistos_hoy || 0) + 1
         })
-        .eq('id', user.id);
+        .eq('id', usuario.id);
 
       if (userProfile?.referido_por_codigo) {
         const { data: referrer } = await supabase
@@ -169,7 +169,7 @@ function Tareas() {
 
             await supabase.from('ganancias_referidos').insert({
               id_usuario_referidor: referrer.id,
-              id_usuario_referido: user.id,
+              id_usuario_referido: usuario.id,
               monto_comisión: commission
             });
           }

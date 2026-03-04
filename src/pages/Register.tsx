@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 function Register() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { signUp } = useAuth();
+  const { registrarse } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -56,7 +56,7 @@ function Register() {
 
     setLoading(true);
     try {
-      await signUp(formData.phone, formData.password, formData.name, formData.referralCode);
+      await registrarse(formData.phone, formData.password, formData.name, formData.referralCode);
       navigate('/mi-perfil');
     } catch (err: any) {
       setError(err.message || 'Error al crear la cuenta');

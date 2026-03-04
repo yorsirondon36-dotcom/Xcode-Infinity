@@ -21,7 +21,7 @@ interface EditMode {
 
 function InformacionPersonalPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { usuario } = useAuth();
   const [userInfo, setUserInfo] = useState<UserInfo>({
     phone: '',
     banking_info: {},
@@ -37,17 +37,17 @@ function InformacionPersonalPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (user?.id) {
+    if (usuario?.id) {
       fetchUserInfo();
     }
-  }, [user?.id]);
+  }, [usuario?.id]);
 
   const fetchUserInfo = async () => {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('usuarios')
         .select('phone, banking_info, withdrawal_pin')
-        .eq('id', user?.id)
+        .eq('id', usuario?.id)
         .maybeSingle();
 
       if (error) throw error;

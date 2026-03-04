@@ -31,28 +31,28 @@ interface DatosUsuario {
 
 function MyProfile() {
   const navigate = useNavigate();
-  const { user, userProfile } = useAuth();
+  const { usuario, perfilUsuario } = useAuth();
   const [userData, setUserData] = useState<DatosUsuario | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.id) {
+    if (usuario?.id) {
       fetchUserData();
     }
-  }, [user]);
+  }, [usuario]);
 
   const fetchUserData = async () => {
     try {
       const { data: profile } = await supabase
         .from('usuarios')
         .select('*')
-        .eq('id', user?.id)
+        .eq('id', usuario?.id)
         .single();
 
       const { data: dailyIncomeData } = await supabase
         .from('ingresos_diarios')
         .select('monto')
-        .eq('id_usuario', user?.id)
+        .eq('id_usuario', usuario?.id)
         .gte('creado_en', new Date().toISOString().split('T')[0]);
 
       const dailyTotal = dailyIncomeData?.reduce((sum, item) => sum + item.monto, 0) || 0;

@@ -15,34 +15,34 @@ interface Commission {
 
 function Referidos() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { usuario } = useAuth();
   const [commissions, setCommissions] = useState<Commission[]>([]);
   const [referralCode, setReferralCode] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [copiedCode, setCopiedCode] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!usuario) return;
     fetchData();
-  }, [user]);
+  }, [usuario]);
 
   const fetchData = async () => {
-    if (!user) return;
+    if (!usuario) return;
     try {
       const { data: userData } = await supabase
-        .from('users')
-        .select('referral_code')
-        .eq('id', user.id)
+        .from('usuarios')
+        .select('codigo_referencia')
+        .eq('id', usuario.id)
         .single();
 
-      if (userData?.referral_code) {
-        setReferralCode(userData.referral_code);
+      if (userData?.codigo_referencia) {
+        setReferralCode(userData.codigo_referencia);
       }
 
       const { data: commissionsData } = await supabase
-        .from('referral_commissions')
+        .from('comisiones_referencia')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('id_usuario', usuario.id)
         .order('created_at', { ascending: false });
 
       if (commissionsData) {

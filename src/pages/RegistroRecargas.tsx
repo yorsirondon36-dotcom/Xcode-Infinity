@@ -14,22 +14,22 @@ interface Recharge {
 
 function RegistroRecargas() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { usuario } = useAuth();
   const [recharges, setRecharges] = useState<Recharge[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.id) {
+    if (usuario?.id) {
       fetchRecharges();
     }
-  }, [user]);
+  }, [usuario]);
 
   const fetchRecharges = async () => {
     try {
       const { data, error } = await supabase
-        .from('recharges')
+        .from('recargas')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('id_usuario', usuario?.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;

@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
 
 function Retiros() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { usuario } = useAuth();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('nequi');
   const [accountNumber, setAccountNumber] = useState('');
@@ -26,7 +26,7 @@ function Retiros() {
       return;
     }
 
-    if (!user) {
+    if (!usuario) {
       setError('Usuario no autenticado');
       return;
     }
@@ -36,9 +36,9 @@ function Retiros() {
 
     try {
       const { data: userData, error: userError } = await supabase
-        .from('users')
+        .from('usuarios')
         .select('balance')
-        .eq('id', user.id)
+        .eq('id', usuario.id)
         .maybeSingle();
 
       if (userError) throw userError;

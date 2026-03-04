@@ -12,7 +12,7 @@ interface LocationState {
 function PaymentQRPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, userProfile, loading: authLoading } = useAuth();
+  const { usuario, perfilUsuario, cargando: authLoading } = useAuth();
   const state = location.state as LocationState;
 
   const [orderNumber, setOrderNumber] = useState('');
@@ -22,12 +22,12 @@ function PaymentQRPage() {
   const amount = state?.amount || 60000;
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!authLoading && !usuario) {
       navigate('/login');
       return;
     }
 
-    if (user && !orderNumber) {
+    if (usuario && !orderNumber) {
       const generateOrderNumber = () => {
         const timestamp = Date.now();
         const random = Math.floor(Math.random() * 10000);
@@ -36,7 +36,7 @@ function PaymentQRPage() {
       };
       generateOrderNumber();
     }
-  }, [user, authLoading, orderNumber, navigate]);
+  }, [usuario, authLoading, orderNumber, navigate]);
 
   const handleSubmit = async () => {
     if (!referenceCode.trim()) {
@@ -44,7 +44,7 @@ function PaymentQRPage() {
       return;
     }
 
-    if (!user) {
+    if (!usuario) {
       setError('Usuario no autenticado');
       return;
     }
@@ -54,9 +54,9 @@ function PaymentQRPage() {
 
     try {
       const { error: insertError } = await supabase
-        .from('transactions')
+        .from('transacciones')
         .insert({
-          user_id: user.id,
+          id_usuario: usuario.id,
           order_number: orderNumber,
           amount: amount,
           reference_code: referenceCode,

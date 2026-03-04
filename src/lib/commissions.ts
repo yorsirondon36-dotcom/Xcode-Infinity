@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { registrarRecompensaVideo, registrarComisionReferido } from './actas';
 
 interface DistributeCommissionParams {
   videoViewerId: string;
@@ -36,6 +37,8 @@ export async function distributeVideoCommissions({
     if (!response.ok) {
       throw new Error(data.error || 'Failed to distribute commissions');
     }
+
+    await registrarRecompensaVideo(videoViewerId, videoValue);
 
     return { success: true };
   } catch (error) {

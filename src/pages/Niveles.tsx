@@ -4,15 +4,15 @@ import { ArrowLeft, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
-interface VipLevel {
-  id: string;
-  name: string;
-  price: number;
-  videosPerDay: number;
-  earningPerVideo: number;
-  dailyEarning: number;
-  monthlyEarning: number;
-  disabled: boolean;
+interface NivelVIP {
+  identificacion: string;
+  nombre: string;
+  precio: number;
+  videosAlDía: number;
+  gananciaAlVideo: number;
+  gananciaAlDía: number;
+  gananciaAlMes: number;
+  deshabilitado: boolean;
 }
 
 interface Toast {
@@ -28,96 +28,96 @@ function Niveles() {
   const [trialStatus, setTrialStatus] = useState<{ isActive: boolean; daysRemaining: number } | null>(null);
   const [loadingTrial, setLoadingTrial] = useState(false);
 
-  const vipLevels: VipLevel[] = [
+  const nivelesVIP: NivelVIP[] = [
     {
-      id: 'vip1',
-      name: 'VIP 1',
-      price: 150000,
-      videosPerDay: 5,
-      earningPerVideo: 1200,
-      dailyEarning: 6000,
-      monthlyEarning: 180000,
-      disabled: false
+      identificacion: 'vip1',
+      nombre: 'VIP 1',
+      precio: 150000,
+      videosAlDía: 5,
+      gananciaAlVideo: 1200,
+      gananciaAlDía: 6000,
+      gananciaAlMes: 180000,
+      deshabilitado: false
     },
     {
-      id: 'vip2',
-      name: 'VIP 2',
-      price: 480000,
-      videosPerDay: 10,
-      earningPerVideo: 1600,
-      dailyEarning: 16000,
-      monthlyEarning: 480000,
-      disabled: false
+      identificacion: 'vip2',
+      nombre: 'VIP 2',
+      precio: 480000,
+      videosAlDía: 10,
+      gananciaAlVideo: 1600,
+      gananciaAlDía: 16000,
+      gananciaAlMes: 480000,
+      deshabilitado: false
     },
     {
-      id: 'vip3',
-      name: 'VIP 3',
-      price: 1300000,
-      videosPerDay: 15,
-      earningPerVideo: 2800,
-      dailyEarning: 42000,
-      monthlyEarning: 1260000,
-      disabled: false
+      identificacion: 'vip3',
+      nombre: 'VIP 3',
+      precio: 1300000,
+      videosAlDía: 15,
+      gananciaAlVideo: 2800,
+      gananciaAlDía: 42000,
+      gananciaAlMes: 1260000,
+      deshabilitado: false
     },
     {
-      id: 'vip4',
-      name: 'VIP 4',
-      price: 4700000,
-      videosPerDay: 30,
-      earningPerVideo: 5600,
-      dailyEarning: 168000,
-      monthlyEarning: 5040000,
-      disabled: true
+      identificacion: 'vip4',
+      nombre: 'VIP 4',
+      precio: 4700000,
+      videosAlDía: 30,
+      gananciaAlVideo: 5600,
+      gananciaAlDía: 168000,
+      gananciaAlMes: 5040000,
+      deshabilitado: true
     },
     {
-      id: 'vip5',
-      name: 'VIP 5',
-      price: 12800000,
-      videosPerDay: 50,
-      earningPerVideo: 9200,
-      dailyEarning: 460000,
-      monthlyEarning: 13800000,
-      disabled: true
+      identificacion: 'vip5',
+      nombre: 'VIP 5',
+      precio: 12800000,
+      videosAlDía: 50,
+      gananciaAlVideo: 9200,
+      gananciaAlDía: 460000,
+      gananciaAlMes: 13800000,
+      deshabilitado: true
     },
     {
-      id: 'vip6',
-      name: 'VIP 6',
-      price: 31000000,
-      videosPerDay: 80,
-      earningPerVideo: 14000,
-      dailyEarning: 1120000,
-      monthlyEarning: 33600000,
-      disabled: true
+      identificacion: 'vip6',
+      nombre: 'VIP 6',
+      precio: 31000000,
+      videosAlDía: 80,
+      gananciaAlVideo: 14000,
+      gananciaAlDía: 1120000,
+      gananciaAlMes: 33600000,
+      deshabilitado: true
     },
     {
-      id: 'vip7',
-      name: 'VIP 7',
-      price: 67200000,
-      videosPerDay: 150,
-      earningPerVideo: 16000,
-      dailyEarning: 2400000,
-      monthlyEarning: 72000000,
-      disabled: true
+      identificacion: 'vip7',
+      nombre: 'VIP 7',
+      precio: 67200000,
+      videosAlDía: 150,
+      gananciaAlVideo: 16000,
+      gananciaAlDía: 2400000,
+      gananciaAlMes: 72000000,
+      deshabilitado: true
     },
     {
-      id: 'vip8',
-      name: 'VIP 8',
-      price: 135000000,
-      videosPerDay: 250,
-      earningPerVideo: 20000,
-      dailyEarning: 5000000,
-      monthlyEarning: 150000000,
-      disabled: true
+      identificacion: 'vip8',
+      nombre: 'VIP 8',
+      precio: 135000000,
+      videosAlDía: 250,
+      gananciaAlVideo: 20000,
+      gananciaAlDía: 5000000,
+      gananciaAlMes: 150000000,
+      deshabilitado: true
     },
     {
-      id: 'vip9',
-      name: 'VIP 9',
-      price: 325000000,
-      videosPerDay: 500,
-      earningPerVideo: 25000,
-      dailyEarning: 12500000,
-      monthlyEarning: 375000000,
-      disabled: true
+      identificacion: 'vip9',
+      nombre: 'VIP 9',
+      precio: 325000000,
+      videosAlDía: 500,
+      gananciaAlVideo: 25000,
+      gananciaAlDía: 12500000,
+      gananciaAlMes: 375000000,
+      deshabilitado: true
     }
   ];
 
@@ -132,13 +132,13 @@ function Niveles() {
 
     try {
       const { data: userData } = await supabase
-        .from('users')
-        .select('trial_level_started_at')
+        .from('usuarios')
+        .select('fecha_inicio_nivel_prueba')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (userData?.trial_level_started_at) {
-        const startDate = new Date(userData.trial_level_started_at);
+      if (userData?.fecha_inicio_nivel_prueba) {
+        const startDate = new Date(userData.fecha_inicio_nivel_prueba);
         const today = new Date();
         const daysPassed = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -162,8 +162,8 @@ function Niveles() {
     setLoadingTrial(true);
     try {
       const { error } = await supabase
-        .from('users')
-        .update({ trial_level_started_at: new Date().toISOString() })
+        .from('usuarios')
+        .update({ fecha_inicio_nivel_prueba: new Date().toISOString() })
         .eq('id', user.id);
 
       if (error) throw error;
@@ -187,8 +187,8 @@ function Niveles() {
     }, 3000);
   };
 
-  const handlePurchase = async (vipLevel: VipLevel) => {
-    if (vipLevel.disabled) {
+  const handlePurchase = async (nivelVIP: NivelVIP) => {
+    if (nivelVIP.deshabilitado) {
       addToast('Por ahora este vip no está activado', 'warning');
       return;
     }
@@ -200,16 +200,16 @@ function Niveles() {
 
     try {
       const { data: userData } = await supabase
-        .from('users')
-        .select('videos_watched_today, last_video_date')
+        .from('usuarios')
+        .select('videos_vistos_hoy, fecha_último_video')
         .eq('id', user.id)
         .maybeSingle();
 
       const today = new Date().toISOString().split('T')[0];
-      const lastVideoDate = userData?.last_video_date ? userData.last_video_date.split('T')[0] : null;
-      const videosWatchedToday = lastVideoDate === today ? userData?.videos_watched_today || 0 : 0;
+      const lastVideoDate = userData?.fecha_último_video ? userData.fecha_último_video.split('T')[0] : null;
+      const videosWatchedToday = lastVideoDate === today ? userData?.videos_vistos_hoy || 0 : 0;
 
-      if (videosWatchedToday >= vipLevel.videosPerDay) {
+      if (videosWatchedToday >= nivelVIP.videosAlDía) {
         addToast('Vuelve mañana', 'warning');
         return;
       }
@@ -286,14 +286,14 @@ function Niveles() {
           </div>
         </div>
 
-        {vipLevels.map((vip) => (
+        {nivelesVIP.map((vip) => (
           <div
-            key={vip.id}
+            key={vip.identificacion}
             className="bg-gradient-to-br from-purple-800 to-gray-900 rounded-2xl overflow-hidden shadow-2xl border border-purple-700 hover:border-purple-600 transition-all duration-300"
           >
             {/* VIP Logo Section */}
             <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 py-8 flex items-center justify-center">
-              <div className="text-5xl font-bold text-gray-900">{vip.name}</div>
+              <div className="text-5xl font-bold text-gray-900">{vip.nombre}</div>
             </div>
 
             {/* Details Section */}
@@ -301,32 +301,32 @@ function Niveles() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-purple-200 font-medium">Precio:</span>
-                  <span className="text-white font-bold">${vip.price.toLocaleString()}</span>
+                  <span className="text-white font-bold">${vip.precio.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-purple-200 font-medium">Videos por día:</span>
-                  <span className="text-white font-bold">({vip.videosPerDay})</span>
+                  <span className="text-white font-bold">({vip.videosAlDía})</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-purple-200 font-medium">Ganancia por video:</span>
-                  <span className="text-white font-bold">${vip.earningPerVideo.toLocaleString()}</span>
+                  <span className="text-white font-bold">${vip.gananciaAlVideo.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-purple-200 font-medium">Ganancia diaria:</span>
-                  <span className="text-white font-bold">${vip.dailyEarning.toLocaleString()}</span>
+                  <span className="text-white font-bold">${vip.gananciaAlDía.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center border-t border-purple-700 pt-3">
                   <span className="text-yellow-400 font-bold">Total mensual:</span>
-                  <span className="text-yellow-400 font-bold">${vip.monthlyEarning.toLocaleString()}</span>
+                  <span className="text-yellow-400 font-bold">${vip.gananciaAlMes.toLocaleString()}</span>
                 </div>
               </div>
 
               {/* Buy Button */}
               <button
                 onClick={() => handlePurchase(vip)}
-                disabled={vip.disabled}
+                disabled={vip.deshabilitado}
                 className={`w-full mt-6 py-3 rounded-lg font-bold text-lg transition-all duration-300 ${
-                  vip.disabled
+                  vip.deshabilitado
                     ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                     : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 shadow-lg hover:shadow-pink-500/50'
                 }`}

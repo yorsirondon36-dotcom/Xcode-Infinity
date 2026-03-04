@@ -19,20 +19,20 @@ import {
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 
-interface UserData {
-  phone: string;
-  balance: number;
-  total_income: number;
-  daily_income: number;
-  current_level: string;
-  banking_info: any;
-  registration_id?: number;
+interface DatosUsuario {
+  teléfono: string;
+  saldo: number;
+  ingreso_total: number;
+  ingreso_diario: number;
+  nivel_actual: string;
+  información_bancaria: any;
+  id_registro?: number;
 }
 
 function MyProfile() {
   const navigate = useNavigate();
   const { user, userProfile } = useAuth();
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<DatosUsuario | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,28 +44,28 @@ function MyProfile() {
   const fetchUserData = async () => {
     try {
       const { data: profile } = await supabase
-        .from('users')
+        .from('usuarios')
         .select('*')
         .eq('id', user?.id)
         .single();
 
       const { data: dailyIncomeData } = await supabase
-        .from('daily_income')
-        .select('amount')
-        .eq('user_id', user?.id)
-        .gte('created_at', new Date().toISOString().split('T')[0]);
+        .from('ingresos_diarios')
+        .select('monto')
+        .eq('id_usuario', user?.id)
+        .gte('creado_en', new Date().toISOString().split('T')[0]);
 
-      const dailyTotal = dailyIncomeData?.reduce((sum, item) => sum + item.amount, 0) || 0;
+      const dailyTotal = dailyIncomeData?.reduce((sum, item) => sum + item.monto, 0) || 0;
 
       if (profile) {
         setUserData({
-          phone: profile.phone,
-          balance: profile.balance || 0,
-          total_income: profile.total_income || 0,
-          daily_income: dailyTotal,
-          current_level: profile.current_level_id || 'Sin nivel',
-          banking_info: profile.banking_info || {},
-          registration_id: profile.registration_id
+          teléfono: profile.teléfono,
+          saldo: profile.saldo || 0,
+          ingreso_total: profile.ingreso_total || 0,
+          ingreso_diario: dailyTotal,
+          nivel_actual: profile.id_nivel_actual || 'Sin nivel',
+          información_bancaria: profile.información_bancaria || {},
+          id_registro: profile.id_registro
         });
       }
     } catch (error) {
@@ -100,7 +100,7 @@ function MyProfile() {
     <div className="min-h-screen bg-gradient-to-b from-purple-900 to-purple-950 pb-24">
       {/* Header with ID */}
       <div className="bg-purple-800 px-6 py-6 shadow-sm border-b border-purple-700">
-        <h1 className="text-2xl font-bold text-yellow-400">ID {userData?.phone || 'N/A'}</h1>
+        <h1 className="text-2xl font-bold text-yellow-400">ID {userData?.teléfono || 'N/A'}</h1>
         <p className="text-purple-200 text-sm mt-1">Tu cuenta</p>
       </div>
 
@@ -110,7 +110,7 @@ function MyProfile() {
           <div className="flex justify-between items-start mb-6">
             <div>
               <p className="text-purple-200 text-sm font-medium">MI NIVEL</p>
-              <p className="text-3xl font-bold text-yellow-400 mt-2">{userData?.current_level}</p>
+              <p className="text-3xl font-bold text-yellow-400 mt-2">{userData?.nivel_actual}</p>
             </div>
             <Award className="w-12 h-12 text-yellow-400" />
           </div>
@@ -138,7 +138,7 @@ function MyProfile() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-purple-200 text-sm font-medium">Mi saldo</p>
-              <p className="text-2xl font-bold text-yellow-400 mt-2">COP {userData?.balance?.toLocaleString('es-CO') || '0'}</p>
+              <p className="text-2xl font-bold text-yellow-400 mt-2">COP {userData?.saldo?.toLocaleString('es-CO') || '0'}</p>
             </div>
             <DollarSign className="w-10 h-10 text-yellow-400" />
           </div>
@@ -149,7 +149,7 @@ function MyProfile() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-200 text-xs font-medium">Ingresos hoy</p>
-                <p className="text-xl font-bold text-yellow-400 mt-1">COP {userData?.daily_income?.toLocaleString('es-CO') || '0'}</p>
+                <p className="text-xl font-bold text-yellow-400 mt-1">COP {userData?.ingreso_diario?.toLocaleString('es-CO') || '0'}</p>
               </div>
               <TrendingUp className="w-8 h-8 text-yellow-400" />
             </div>
@@ -159,7 +159,7 @@ function MyProfile() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-200 text-xs font-medium">Ingresos totales</p>
-                <p className="text-xl font-bold text-yellow-400 mt-1">COP {userData?.total_income?.toLocaleString('es-CO') || '0'}</p>
+                <p className="text-xl font-bold text-yellow-400 mt-1">COP {userData?.ingreso_total?.toLocaleString('es-CO') || '0'}</p>
               </div>
               <BarChart3 className="w-8 h-8 text-yellow-400" />
             </div>

@@ -4,18 +4,18 @@ import { ArrowLeft, Play, Pause, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 
-interface VideoTask {
-  id: string;
-  title: string;
-  image_url: string;
-  video_url: string;
-  reward: number;
-  duration_seconds: number;
+interface TareaVideo {
+  identificacion: string;
+  título: string;
+  url_imagen: string;
+  url_video: string;
+  recompensa: number;
+  duración_segundos: number;
 }
 
-interface CompletedVideo {
-  video_task_id: string;
-  completed_at: string;
+interface VideoCompletado {
+  id_tarea_video: string;
+  completado_en: string;
 }
 
 function Tareas() {
@@ -23,8 +23,8 @@ function Tareas() {
   const { user, userProfile } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const [videoTasks, setVideoTasks] = useState<VideoTask[]>([]);
-  const [completedVideos, setCompletedVideos] = useState<CompletedVideo[]>([]);
+  const [tareasVideos, setTareasVideos] = useState<TareaVideo[]>([]);
+  const [videosCompletados, setVideosCompletados] = useState<VideoCompletado[]>([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -64,9 +64,9 @@ function Tareas() {
       setLoading(true);
 
       const { data: level } = await supabase
-        .from('levels')
+        .from('niveles')
         .select('*')
-        .eq('id', userProfile?.current_level_id)
+        .eq('identificacion', userProfile?.id_nivel_actual)
         .maybeSingle();
 
       if (level) {
@@ -74,28 +74,28 @@ function Tareas() {
       }
 
       const { data: tasks } = await supabase
-        .from('video_tasks')
+        .from('tareas_videos')
         .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: true });
+        .eq('esta_activo', true)
+        .order('creado_en', { ascending: true });
 
       if (tasks) {
-        setVideoTasks(tasks);
+        setTareasVideos(tasks);
       }
 
       const today = new Date().toISOString().split('T')[0];
       const { data: completed } = await supabase
-        .from('user_video_history')
-        .select('video_task_id, completed_at')
-        .eq('user_id', user.id)
-        .gte('completed_at', `${today}T00:00:00`);
+        .from('historial_videos_usuarios')
+        .select('id_tarea_video, completado_en')
+        .eq('id_usuario', user.id)
+        .gte('completado_en', `${today}T00:00:00`);
 
       if (completed) {
-        setCompletedVideos(completed);
-        setTodayEarnings(completed.length * (level?.earnings_per_video || 500));
+        setVideosCompletados(completed);
+        setTodayEarnings(completed.length * (level?.ganancia_por_video || 500));
       }
 
-      if (level && completed && completed.length >= level.daily_video_limit) {
+      if (level && completed && completed.length >= level.videos_diarios_limitados) {
         setDailyLimitReached(true);
       }
     } catch (error) {
@@ -106,9 +106,9 @@ function Tareas() {
   };
 
   const startVideo = (index: number) => {
-    if (!dailyLimitReached && !isVideoCompleted(videoTasks[index]?.id)) {
+    if (!dailyLimitReached && !isVideoCompleted(tareasVideos[index]?.identificacion)) {
       setCurrentVideoIndex(index);
-      setTimeRemaining(videoTasks[index].duration_seconds || 60);
+      setTimeRemaining(tareasVideos[index].duración_segundos || 60);
       setIsPlaying(true);
       setShowRating(false);
       if (videoRef.current) {
@@ -118,7 +118,7 @@ function Tareas() {
   };
 
   const isVideoCompleted = (videoId: string) => {
-    return completedVideos.some(cv => cv.video_task_id === videoId);
+    return videosCompletados.some(cv => cv.id_tarea_video === videoId);
   };
 
   const handleRating = async (rating: number) => {
@@ -127,71 +127,71 @@ function Tareas() {
     try {
       setSelectedRating(rating);
 
-      const currentVideo = videoTasks[currentVideoIndex];
-      const reward = levelInfo.earnings_per_video;
+      const currentVideo = tareasVideos[currentVideoIndex];
+      const reward = levelInfo.ganancia_por_video;
 
-      await supabase.from('user_video_history').insert({
-        user_id: user.id,
-        video_task_id: currentVideo.id,
-        earnings_received: reward,
-        rating
+      await supabase.from('historial_videos_usuarios').insert({
+        id_usuario: user.id,
+        id_tarea_video: currentVideo.identificacion,
+        ganancias_recibidas: reward,
+        calificación: rating
       });
 
       await supabase
-        .from('users')
+        .from('usuarios')
         .update({
-          balance: (userProfile?.balance || 0) + reward,
-          today_earnings: todayEarnings + reward,
-          videos_watched_today: (userProfile?.videos_watched_today || 0) + 1
+          saldo: (userProfile?.saldo || 0) + reward,
+          ganancias_hoy: todayEarnings + reward,
+          videos_vistos_hoy: (userProfile?.videos_vistos_hoy || 0) + 1
         })
         .eq('id', user.id);
 
-      if (userProfile?.referred_by_code) {
+      if (userProfile?.referido_por_codigo) {
         const { data: referrer } = await supabase
-          .from('users')
-          .select('id, current_level_id')
-          .eq('referral_code', userProfile.referred_by_code)
+          .from('usuarios')
+          .select('id, id_nivel_actual')
+          .eq('código_referido', userProfile.referido_por_codigo)
           .maybeSingle();
 
         if (referrer) {
           const { data: referrerLevel } = await supabase
-            .from('levels')
-            .select('referral_commission_percentage')
-            .eq('id', referrer.current_level_id)
+            .from('niveles')
+            .select('porcentaje_comisión_referido')
+            .eq('identificacion', referrer.id_nivel_actual)
             .maybeSingle();
 
           if (referrerLevel) {
-            const commission = (reward * referrerLevel.referral_commission_percentage) / 100;
+            const commission = (reward * referrerLevel.porcentaje_comisión_referido) / 100;
             await supabase
-              .from('users')
-              .update({ balance: (await supabase.from('users').select('balance').eq('id', referrer.id).maybeSingle()).data?.balance + commission })
+              .from('usuarios')
+              .update({ saldo: (await supabase.from('usuarios').select('saldo').eq('id', referrer.id).maybeSingle()).data?.saldo + commission })
               .eq('id', referrer.id);
 
-            await supabase.from('referral_earnings').insert({
-              referrer_user_id: referrer.id,
-              referral_user_id: user.id,
-              commission_amount: commission
+            await supabase.from('ganancias_referidos').insert({
+              id_usuario_referidor: referrer.id,
+              id_usuario_referido: user.id,
+              monto_comisión: commission
             });
           }
         }
       }
 
-      setCompletedVideos([...completedVideos, { video_task_id: currentVideo.id, completed_at: new Date().toISOString() }]);
+      setVideosCompletados([...videosCompletados, { id_tarea_video: currentVideo.identificacion, completado_en: new Date().toISOString() }]);
       setTodayEarnings(todayEarnings + reward);
       setShowRating(false);
 
-      if (completedVideos.length + 1 >= levelInfo.daily_video_limit) {
+      if (videosCompletados.length + 1 >= levelInfo.videos_diarios_limitados) {
         setDailyLimitReached(true);
       }
 
       setTimeout(() => {
-        const nextIncompleteIndex = videoTasks.findIndex((v, i) => i > currentVideoIndex && !isVideoCompleted(v.id));
+        const nextIncompleteIndex = tareasVideos.findIndex((v, i) => i > currentVideoIndex && !isVideoCompleted(v.identificacion));
         if (nextIncompleteIndex !== -1) {
           startVideo(nextIncompleteIndex);
         }
       }, 1000);
     } catch (error) {
-      console.error('Error processing rating:', error);
+      console.error('Error al procesar calificación:', error);
     }
   };
 
@@ -203,7 +203,7 @@ function Tareas() {
     );
   }
 
-  const currentVideo = videoTasks[currentVideoIndex];
+  const currentVideo = tareasVideos[currentVideoIndex];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950 pb-24">
@@ -225,7 +225,7 @@ function Tareas() {
           <div className="bg-gradient-to-r from-emerald-900/50 to-emerald-800/50 border border-emerald-500 rounded-lg p-6 text-center">
             <h2 className="text-2xl font-bold text-emerald-300 mb-2">¡Felicidades!</h2>
             <p className="text-emerald-200 mb-4">
-              Has completado tu límite diario de {levelInfo?.daily_video_limit} videos
+              Has completado tu límite diario de {levelInfo?.videos_diarios_limitados} videos
             </p>
             <p className="text-lg font-semibold text-yellow-400">
               Hoy ganaste: COP {todayEarnings.toLocaleString('es-CO')}
@@ -238,7 +238,7 @@ function Tareas() {
               <div className="relative aspect-video bg-black">
                 <video
                   ref={videoRef}
-                  src={currentVideo?.video_url}
+                  src={currentVideo?.url_video}
                   className="w-full h-full object-cover"
                   onEnded={() => {
                     setIsPlaying(false);
@@ -261,9 +261,9 @@ function Tareas() {
               </div>
 
               <div className="p-4 space-y-2">
-                <h2 className="text-xl font-bold text-white">{currentVideo?.title}</h2>
+                <h2 className="text-xl font-bold text-white">{currentVideo?.título}</h2>
                 <p className="text-lg font-semibold text-yellow-400">
-                  +COP {levelInfo?.earnings_per_video.toLocaleString('es-CO')} por completar
+                  +COP {levelInfo?.ganancia_por_video.toLocaleString('es-CO')} por completar
                 </p>
                 {showRating && (
                   <div className="flex gap-3 mt-4">
@@ -287,16 +287,16 @@ function Tareas() {
 
             <div>
               <h3 className="text-lg font-bold text-white mb-4">
-                Más videos ({videoTasks.length - completedVideos.length} disponibles)
+                Más videos ({tareasVideos.length - videosCompletados.length} disponibles)
               </h3>
               <div className="space-y-3 max-h-64 overflow-y-auto">
-                {videoTasks.map((video, index) => {
-                  const isCompleted = isVideoCompleted(video.id);
+                {tareasVideos.map((video, index) => {
+                  const isCompleted = isVideoCompleted(video.identificacion);
                   const isActive = index === currentVideoIndex;
 
                   return (
                     <div
-                      key={video.id}
+                      key={video.identificacion}
                       onClick={() => !isCompleted && startVideo(index)}
                       className={`flex gap-3 p-3 rounded-lg cursor-pointer transition-all ${
                         isCompleted
@@ -307,13 +307,13 @@ function Tareas() {
                       }`}
                     >
                       <img
-                        src={video.image_url}
-                        alt={video.title}
+                        src={video.url_imagen}
+                        alt={video.título}
                         className="w-16 h-16 rounded object-cover flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-white font-semibold text-sm truncate">{video.title}</p>
-                        <p className="text-yellow-400 text-sm font-bold">+COP {video.reward.toLocaleString('es-CO')}</p>
+                        <p className="text-white font-semibold text-sm truncate">{video.título}</p>
+                        <p className="text-yellow-400 text-sm font-bold">+COP {video.recompensa.toLocaleString('es-CO')}</p>
                         {isCompleted && <p className="text-emerald-400 text-xs mt-1">✓ Completado</p>}
                       </div>
                       {isCompleted && (
@@ -332,7 +332,7 @@ function Tareas() {
                 Hoy ganaste: <span className="text-yellow-400 font-bold text-lg">COP {todayEarnings.toLocaleString('es-CO')}</span>
               </p>
               <p className="text-slate-400 text-xs mt-2">
-                {levelInfo?.daily_video_limit - completedVideos.length} videos restantes de tu límite diario
+                {levelInfo?.videos_diarios_limitados - videosCompletados.length} videos restantes de tu límite diario
               </p>
             </div>
           </>

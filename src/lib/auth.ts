@@ -66,14 +66,14 @@ export const registrarseConTelefono = async (
       ingresos_hoy: 0,
       videos_vistas_hoy: 0,
     }])
-    .select('id, telefono, nombre_completo')
+    .select('identificacion, telefono, nombre_completo')
     .single();
 
   if (error) throw error;
   if (!data) throw new Error('Error al crear el usuario');
 
   const sesion: SesionUsuario = {
-    id: data.id,
+    id: data.identificacion,
     telefono: data.telefono,
     nombre_completo: data.nombre_completo,
   };
@@ -88,7 +88,7 @@ export const iniciarSesionConTelefono = async (
 ): Promise<SesionUsuario> => {
   const { data, error } = await supabase
     .from('usuarios')
-    .select('id, telefono, nombre_completo, contrasena')
+    .select('identificacion, telefono, nombre_completo, contrasena')
     .eq('telefono', telefono)
     .maybeSingle();
 
@@ -99,7 +99,7 @@ export const iniciarSesionConTelefono = async (
   if (!esContrasenaValida) throw new Error('Teléfono o contraseña inválidos');
 
   const sesion: SesionUsuario = {
-    id: data.id,
+    id: data.identificacion,
     telefono: data.telefono,
     nombre_completo: data.nombre_completo,
   };

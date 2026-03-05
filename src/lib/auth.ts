@@ -66,16 +66,16 @@ export const registrarseConTelefono = async (
       ingresos_hoy: 0,
       videos_vistas_hoy: 0,
     }])
-    .select('identificacion, telefono, nombre_completo')
-    .single();
+    .select('identificacion, telefono, nombre_completo');
 
   if (error) throw error;
-  if (!data) throw new Error('Error al crear el usuario');
+  if (!data || data.length === 0) throw new Error('Error al crear el usuario');
 
+  const usuario = data[0];
   const sesion: SesionUsuario = {
-    id: data.identificacion,
-    telefono: data.telefono,
-    nombre_completo: data.nombre_completo,
+    id: usuario.identificacion,
+    telefono: usuario.telefono,
+    nombre_completo: usuario.nombre_completo,
   };
 
   guardarSesion(sesion);

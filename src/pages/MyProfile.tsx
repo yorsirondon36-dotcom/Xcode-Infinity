@@ -24,7 +24,7 @@ interface DatosUsuario {
   saldo: number;
   ingreso_total: number;
   ingreso_diario: number;
-  nivel_actual: string;
+  id_nivel_actual: string;
   información_bancaria: any;
   id_registro?: number;
 }
@@ -47,7 +47,7 @@ function MyProfile() {
         .from('usuarios')
         .select('*')
         .eq('id', usuario?.id)
-        .single();
+        .maybeSingle();
 
       const { data: dailyIncomeData } = await supabase
         .from('ingresos_diarios')
@@ -63,7 +63,7 @@ function MyProfile() {
           saldo: profile.saldo || 0,
           ingreso_total: profile.ingreso_total || 0,
           ingreso_diario: dailyTotal,
-          nivel_actual: profile.id_nivel_actual || 'Sin nivel',
+          id_nivel_actual: profile.id_nivel_actual || 'Sin nivel',
           información_bancaria: profile.información_bancaria || {},
           id_registro: profile.id_registro
         });
@@ -110,7 +110,7 @@ function MyProfile() {
           <div className="flex justify-between items-start mb-6">
             <div>
               <p className="text-purple-200 text-sm font-medium">MI NIVEL</p>
-              <p className="text-3xl font-bold text-yellow-400 mt-2">{userData?.nivel_actual}</p>
+              <p className="text-3xl font-bold text-yellow-400 mt-2">{userData?.id_nivel_actual}</p>
             </div>
             <Award className="w-12 h-12 text-yellow-400" />
           </div>

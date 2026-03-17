@@ -56,26 +56,26 @@ export const registrarseConTelefono = async (
   const { data, error } = await supabase
     .from('usuarios')
     .insert([{
-      telefono,
+      teléfono: telefono,
       contrasena: hashContrasena,
       nombre_completo: nombreCompleto,
-      codigo_referencia: nuevoCodigoReferencia,
-      referido_por_codigo: codigoReferencia || null,
-      balance: 0,
-      ingresos_totales: 0,
-      ingresos_hoy: 0,
-      videos_vistas_hoy: 0,
+      código_referido: nuevoCodigoReferencia,
+      referido_por_código: codigoReferencia || null,
+      saldo: 0,
+      ingreso_total: 0,
+      ganancias_hoy: 0,
+      videos_vistos_hoy: 0,
     }])
-    .select('identificacion, telefono, nombre_completo');
+    .select('id, teléfono, nombre_completo')
+    .single();
 
   if (error) throw error;
-  if (!data || data.length === 0) throw new Error('Error al crear el usuario');
+  if (!data) throw new Error('Error al crear el usuario');
 
-  const usuario = data[0];
   const sesion: SesionUsuario = {
-    id: usuario.identificacion,
-    telefono: usuario.telefono,
-    nombre_completo: usuario.nombre_completo,
+    id: data.id,
+    telefono: data.teléfono,
+    nombre_completo: data.nombre_completo,
   };
 
   guardarSesion(sesion);
@@ -88,8 +88,8 @@ export const iniciarSesionConTelefono = async (
 ): Promise<SesionUsuario> => {
   const { data, error } = await supabase
     .from('usuarios')
-    .select('identificacion, telefono, nombre_completo, contrasena')
-    .eq('telefono', telefono)
+    .select('id, teléfono, nombre_completo, contrasena')
+    .eq('teléfono', telefono)
     .maybeSingle();
 
   if (error) throw error;
@@ -99,8 +99,8 @@ export const iniciarSesionConTelefono = async (
   if (!esContrasenaValida) throw new Error('Teléfono o contraseña inválidos');
 
   const sesion: SesionUsuario = {
-    id: data.identificacion,
-    telefono: data.telefono,
+    id: data.id,
+    telefono: data.teléfono,
     nombre_completo: data.nombre_completo,
   };
 

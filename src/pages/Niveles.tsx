@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -122,19 +122,19 @@ function Niveles() {
   ];
 
   useEffect(() => {
-    if (usuario?.id) {
+    if (usuario?.identificacion) {
       checkTrialStatus();
     }
-  }, [usuario?.id]);
+  }, [usuario?.identificacion]);
 
   const checkTrialStatus = async () => {
-    if (!usuario?.id) return;
+    if (!usuario?.identificacion) return;
 
     try {
       const { data: userData } = await supabase
         .from('usuarios')
         .select('fecha_inicio_nivel_prueba')
-        .eq('id', user.id)
+        .eq('identificacion', usuario.identificacion)
         .maybeSingle();
 
       if (userData?.fecha_inicio_nivel_prueba) {
@@ -164,7 +164,7 @@ function Niveles() {
       const { error } = await supabase
         .from('usuarios')
         .update({ fecha_inicio_nivel_prueba: new Date().toISOString() })
-        .eq('id', user.id);
+        .eq('identificacion', usuario.identificacion);
 
       if (error) throw error;
 
@@ -201,12 +201,12 @@ function Niveles() {
     try {
       const { data: userData } = await supabase
         .from('usuarios')
-        .select('videos_vistos_hoy, fecha_último_video')
-        .eq('id', user.id)
+        .select('videos_vistos_hoy, fecha_ultimo_video')
+        .eq('identificacion', usuario.identificacion)
         .maybeSingle();
 
       const today = new Date().toISOString().split('T')[0];
-      const lastVideoDate = userData?.fecha_último_video ? userData.fecha_último_video.split('T')[0] : null;
+      const lastVideoDate = userData?.fecha_ultimo_video ? userData.fecha_ultimo_video.split('T')[0] : null;
       const videosWatchedToday = lastVideoDate === today ? userData?.videos_vistos_hoy || 0 : 0;
 
       if (videosWatchedToday >= nivelVIP.videosAlDía) {

@@ -38,7 +38,7 @@ function Retiros() {
       const { data: userData, error: userError } = await supabase
         .from('usuarios')
         .select('balance')
-        .eq('id', usuario.id)
+        .eq('identificacion', usuario.identificacion)
         .maybeSingle();
 
       if (userError) throw userError;
@@ -50,9 +50,9 @@ function Retiros() {
       }
 
       const { error: withdrawError } = await supabase
-        .from('withdrawals')
+        .from('retiros')
         .insert({
-          user_id: user.id,
+          id_usuario: usuario.identificacion,
           amount: selectedAmount,
           method: selectedPaymentMethod === 'nequi' ? 'Nequi' : 'Bancolombia',
           account_number: accountNumber,
@@ -63,9 +63,9 @@ function Retiros() {
 
       const newBalance = userData.balance - selectedAmount;
       const { error: updateError } = await supabase
-        .from('users')
+        .from('usuarios')
         .update({ balance: newBalance })
-        .eq('id', user.id);
+        .eq('identificacion', usuario.identificacion);
 
       if (updateError) throw updateError;
 

@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { getStoredSession, setStoredSession, signOut as authSignOut, signUpWithPhone as authSignUpWithPhone, signInWithPhone as authSignInWithPhone } from '../lib/auth';
+import { getStoredSession, signOut as authSignOut, signUpWithPhone as authSignUpWithPhone, signInWithPhone as authSignInWithPhone } from '../lib/auth';
 
 interface SesionUsuario {
-  id: string;
+  identificacion: string;
   telefono: string;
   nombre_completo: string;
 }
@@ -39,7 +39,7 @@ export function ProveedorAutenticacion({ children }: { children: React.ReactNode
     const sesion = getStoredSession();
     if (sesion) {
       setUsuario(sesion);
-      obtenerPerfilUsuario(sesion.id);
+      obtenerPerfilUsuario(sesion.identificacion);
     } else {
       setCargando(false);
     }
@@ -66,7 +66,7 @@ export function ProveedorAutenticacion({ children }: { children: React.ReactNode
     try {
       const sesion = await authSignUpWithPhone(telefono, contrasena, nombre, codigoReferencia);
       setUsuario(sesion);
-      await obtenerPerfilUsuario(sesion.id);
+      await obtenerPerfilUsuario(sesion.identificacion);
     } catch (error) {
       console.error('Error al registrarse:', error);
       throw error;
@@ -77,7 +77,7 @@ export function ProveedorAutenticacion({ children }: { children: React.ReactNode
     try {
       const sesion = await authSignInWithPhone(telefono, contrasena);
       setUsuario(sesion);
-      await obtenerPerfilUsuario(sesion.id);
+      await obtenerPerfilUsuario(sesion.identificacion);
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       throw error;

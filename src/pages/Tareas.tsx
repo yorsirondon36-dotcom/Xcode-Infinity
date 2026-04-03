@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Play, Pause, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -58,7 +58,7 @@ function Tareas() {
   }, [isPlaying, timeRemaining]);
 
   const loadData = async () => {
-    if (!user) return;
+    if (!usuario) return;
 
     try {
       setLoading(true);
@@ -66,7 +66,7 @@ function Tareas() {
       const { data: level } = await supabase
         .from('niveles')
         .select('*')
-        .eq('identificacion', userProfile?.id_nivel_actual)
+        .eq('identificacion', perfilUsuario?.id_nivel_actual)
         .maybeSingle();
 
       if (level) {
@@ -87,7 +87,7 @@ function Tareas() {
       const { data: completed } = await supabase
         .from('historial_videos_usuarios')
         .select('id_tarea_video, completado_en')
-        .eq('id_usuario', usuario.id)
+        .eq('id_usuario', usuario.identificacion)
         .gte('completado_en', `${today}T00:00:00`);
 
       if (completed) {
@@ -122,7 +122,7 @@ function Tareas() {
   };
 
   const handleRating = async (rating: number) => {
-    if (!user || !levelInfo) return;
+    if (!usuario || !levelInfo) return;
 
     try {
       setSelectedRating(rating);
@@ -131,47 +131,55 @@ function Tareas() {
       const reward = levelInfo.ganancia_por_video;
 
       await supabase.from('historial_videos_usuarios').insert({
-        id_usuario: usuario.id,
+        id_usuario: usuario.identificacion,
         id_tarea_video: currentVideo.identificacion,
         ganancias_recibidas: reward,
-        calificación: rating
+        calificacion: rating
       });
 
       await supabase
         .from('usuarios')
         .update({
-          saldo: (userProfile?.saldo || 0) + reward,
+          saldo: (perfilUsuario?.saldo || 0) + reward,
           ganancias_hoy: todayEarnings + reward,
-          videos_vistos_hoy: (userProfile?.videos_vistos_hoy || 0) + 1
+          videos_vistos_hoy: (perfilUsuario?.videos_vistos_hoy || 0) + 1
         })
-        .eq('id', usuario.id);
+        .eq('identificacion', usuario.identificacion);
 
-      if (userProfile?.referido_por_codigo) {
+      if (perfilUsuario?.referido_por_codigo) {
         const { data: referrer } = await supabase
           .from('usuarios')
-          .select('id, id_nivel_actual')
-          .eq('código_referido', userProfile.referido_por_codigo)
+          .select('identificacion, id_nivel_actual')
+          .eq('codigo_referido', perfilUsuario.referido_por_codigo)
           .maybeSingle();
 
         if (referrer) {
           const { data: referrerLevel } = await supabase
             .from('niveles')
-            .select('porcentaje_comisión_referido')
+            .select('porcentaje_comision_referido')
             .eq('identificacion', referrer.id_nivel_actual)
             .maybeSingle();
 
           if (referrerLevel) {
-            const commission = (reward * referrerLevel.porcentaje_comisión_referido) / 100;
-            await supabase
+            const commission = (reward * referrerLevel.porcentaje_comision_referido) / 100;
+            const { data: referrerData } = await supabase
               .from('usuarios')
-              .update({ saldo: (await supabase.from('usuarios').select('saldo').eq('id', referrer.id).maybeSingle()).data?.saldo + commission })
-              .eq('id', referrer.id);
+              .select('saldo')
+              .eq('identificacion', referrer.identificacion)
+              .maybeSingle();
 
-            await supabase.from('ganancias_referidos').insert({
-              id_usuario_referidor: referrer.id,
-              id_usuario_referido: usuario.id,
-              monto_comisión: commission
-            });
+            if (referrerData) {
+              await supabase
+                .from('usuarios')
+                .update({ saldo: referrerData.saldo + commission })
+                .eq('identificacion', referrer.identificacion);
+
+              await supabase.from('ganancias_referidos').insert({
+                id_usuario_referidor: referrer.identificacion,
+                id_usuario_referido: usuario.identificacion,
+                monto_comision: commission
+              });
+            }
           }
         }
       }

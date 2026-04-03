@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, CreditCard, Key, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -37,26 +37,26 @@ function InformacionPersonalPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (usuario?.id) {
+    if (usuario?.identificacion) {
       fetchUserInfo();
     }
-  }, [usuario?.id]);
+  }, [usuario?.identificacion]);
 
   const fetchUserInfo = async () => {
     try {
       const { data, error } = await supabase
         .from('usuarios')
-        .select('phone, banking_info, withdrawal_pin')
-        .eq('id', usuario?.id)
+        .select('telefono, informacion_bancaria, clave_retiro')
+        .eq('identificacion', usuario?.identificacion)
         .maybeSingle();
 
       if (error) throw error;
 
       if (data) {
         const newUserInfo: UserInfo = {
-          phone: data.phone || '',
-          banking_info: data.banking_info || {},
-          withdrawal_pin: data.withdrawal_pin || null,
+          phone: data.telefono || '',
+          banking_info: data.informacion_bancaria || {},
+          withdrawal_pin: data.clave_retiro || null,
         };
         setUserInfo(newUserInfo);
         setTempValues(newUserInfo);
@@ -74,9 +74,9 @@ function InformacionPersonalPage() {
       const updateData: any = { [field]: value };
 
       const { error } = await supabase
-        .from('users')
+        .from('usuarios')
         .update(updateData)
-        .eq('id', user?.id);
+        .eq('identificacion', usuario?.identificacion);
 
       if (error) throw error;
 
